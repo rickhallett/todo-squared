@@ -66,7 +66,7 @@ TodoList.prototype.insertTodo = function (text, parent) {
             currentTodo.subTodo = [];
           }
           currentTodo.subTodo.push(new Todo(text, parent));
-          //does return stop for each?
+          //NB: does return stop for each?
           return;
         }
         //recursive case
@@ -110,6 +110,38 @@ TodoList.prototype.deleteTodo = function (text) {
   return find($todoList.$root);
 }
 
+TodoList.prototype.toggleTodo = function(text) {
+  let foundTodo;
+  function find(inArray) {
+    inArray.forEach(function (currentTodo, index) {
+      //base case
+      if (currentTodo.text === text) {
+        currentTodo.completed = !currentTodo.completed;
+        let shouldToggle = currentTodo.completed;
+        //toggle children recursive case
+        if (currentTodo.subTodo !== null) {
+          // debugger;
+          (function toggleAllChildren(child){
+            child.forEach(function(currentChild, index) {
+              currentChild.completed = shouldToggle;
+              if(currentChild.subTodo !== null) {
+                toggleAllChildren(currentChild.subTodo);
+              }
+            });
+          })(currentTodo.subTodo);
+        }
+        return;
+      }
+      //single nested recursive case
+      if (currentTodo.subTodo !== null) {
+        return find(currentTodo.subTodo);
+      }
+    });
+    return foundTodo;
+  }
+  return find($todoList.$root);
+}
+
 TodoList.prototype.totalTodos = function () {
   let counter = 0;
   function find(inArray) {
@@ -133,10 +165,14 @@ TodoList.prototype.displayTodos = function () {
   function find(inArray) {
     inArray.forEach(function (currentTodo, index, inArray) {
       let spaces = '';
+      let completedMark = '( )';
       for (let i = 1; i <= indentation; i++) {
         spaces += '     ';
       }
-      console.log(`${spaces} ${index + 1} ${currentTodo.text}`)
+      if(currentTodo.completed === true) {
+        completedMark = '(x)'
+      }
+      console.log(`${completedMark}${spaces} ${index + 1} ${currentTodo.text}`)
       //recursive case
       if (currentTodo.subTodo !== null) {
         indentation++;
@@ -167,14 +203,19 @@ let $todoList = new TodoList();
 $todoList.insertTodo('Complete watchandcode');
 $todoList.insertTodo('master javascript');
 $todoList.insertTodo('Overthrow Gordon');
+$todoList.insertTodo('climb the student ranks', 'Overthrow Gordon');
 $todoList.insertTodo('consider reviewing some videos', 'Complete watchandcode');
 $todoList.insertTodo('get a javascript developer job', 'master javascript');
+$todoList.insertTodo('prototype nested todo list', 'master javascript');
 $todoList.insertTodo('complete BYOA', 'master javascript');
 $todoList.insertTodo('master vue.js', 'master javascript');
 $todoList.insertTodo('complete tutorial', 'master vue.js');
 $todoList.insertTodo('read documentation', 'master vue.js');
 $todoList.insertTodo('implement TodoSquared', 'master vue.js');
 $todoList.insertTodo('build a robust web app', 'get a javascript developer job');
+$todoList.toggleTodo('climb the student ranks')
+$todoList.toggleTodo('prototype nested todo list')
+$todoList.toggleTodo('read documentation')
 
 // console.log($todoList)
 $todoList.displayTodos();
