@@ -17,10 +17,7 @@ Todo List:
 //          prototype
 // =================================
 
-
-
-
-$todoListDemo = {
+$todoListDemoData = {
   $root: [
     {
       parent: '$root',
@@ -40,13 +37,107 @@ $todoListDemo = {
           text: 'master vue.js',
           completed: false,
           dateCreated: '19/04/2018',
-          subTodo: null
+          subTodo: [
+          {
+            parent: 'master vue.js',
+            text: 'complete tutorial',
+            completed: false,
+            dateCreated: '19/04/2018',
+            subTodo: null
+          },
+          {
+            parent: 'master vue.js',
+            text: 'read documentation for each feature (don\'t rush)',
+            completed: false,
+            dateCreated: '19/04/2018',
+            subTodo: null
+          }
+        ]
         }
       ]
     },
   ]
 }
 
+function TodoList() {
+  this.$root = [];
+}
+
+//function constructor to create todos
+function Todo(text, parent) {
+  this.parent = parent || '$root';
+  this.text = text;
+  this.completed = false;
+  this.dateCreated = new Date();
+  this.subTodo = null;
+}
+
+//function to find todos by name
+//EXTRA FEATURE: store all todos with matching text, create array and return all these todos with link to parent
+TodoList.prototype.findTodo = function (text) {
+  let foundTodo;
+
+  function find(inArray) {
+    inArray.forEach(function(currentTodo, index) {
+      //recursive case
+      if(currentTodo.subTodo !== null) {
+        return find(currentTodo.subTodo);
+      }
+      //base case
+      if(currentTodo.text === text) {
+        foundTodo = currentTodo;
+        return;
+      }
+    });
+
+    return foundTodo;
+  }
+  return find($todoListDemoData.$root);
+}
+
+//function to add todos at named level
+TodoList.prototype.insertTodo = function (text, parent) {
+  if (parent) {
+    // debugger;
+    function find(inArray) {
+      inArray.forEach(function (currentTodo, index) {
+        //base case
+        if (currentTodo.text === parent) {
+          //initialise array and insert todo
+          currentTodo.subTodo = [];
+          currentTodo.subTodo.push(new Todo(text, parent));
+          //does return stop for each
+          return;
+        }
+        //recursive case
+        if (currentTodo.subTodo !== null) {
+          return find(currentTodo.subTodo);
+        }
+      });
+    }
+
+    find($todoList.$root)
+
+  } else {
+    $todoList.$root.push(new Todo(text, parent));
+  }
+}
+
+let $todoList = new TodoList();
+
+$todoList.insertTodo('Complete watchandcode');
+$todoList.insertTodo('master javascript');
+$todoList.insertTodo('master js');
+$todoList.insertTodo('consider reviewing some videos', 'Complete watchandcode');
+$todoList.insertTodo('get a javascript developer job', 'master javascript');
+$todoList.insertTodo('complete BYOA', 'master js');
+$todoList.insertTodo('build a robust web app', 'get a javascript developer job');
+
+console.log($todoList)
+
+
+
+/*
 $todoList = {
   $root: [
     {
@@ -157,5 +248,4 @@ $todoList = {
     }
   ]
 };
-
-console.log($todoList);
+*/
