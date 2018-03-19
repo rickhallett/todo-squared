@@ -62,7 +62,7 @@ TodoList.prototype.insertTodo = function (text, parent) {
         //base case
         if (currentTodo.text === parent) {
           //if no array, initialise array
-          if(currentTodo.subTodo === null) {
+          if (currentTodo.subTodo === null) {
             currentTodo.subTodo = [];
           }
           currentTodo.subTodo.push(new Todo(text, parent));
@@ -82,7 +82,35 @@ TodoList.prototype.insertTodo = function (text, parent) {
   }
 }
 
-TodoList.prototype.totalTodos = function() {
+TodoList.prototype.deleteTodo = function (text) {
+  let previousTodo;
+  function find(inArray) {
+    inArray.forEach(function (currentTodo, index) {
+      //base case
+      if (currentTodo.text === text) {
+        if(previousTodo) {
+          let index = previousTodo.subTodo.indexOf(currentTodo);
+          previousTodo.subTodo.splice(index, 1);
+          //if no previous todo (ie currently at $root)
+        } else {
+          let index = inArray.indexOf(currentTodo);
+          inArray.splice(index, 1);
+        }
+        return;
+      }
+      //recursive case
+      if (currentTodo.subTodo !== null) {
+        //store previous todo for deletion
+        previousTodo = currentTodo;
+        return find(currentTodo.subTodo);
+      }
+      
+    });
+  }
+  return find($todoList.$root);
+}
+
+TodoList.prototype.totalTodos = function () {
   let counter = 0;
   function find(inArray) {
     inArray.forEach(function (currentTodo, index) {
@@ -99,7 +127,7 @@ TodoList.prototype.totalTodos = function() {
   return find($todoList.$root);
 }
 
-TodoList.prototype.displayTodos = function() {
+TodoList.prototype.displayTodos = function () {
   console.log(`\nTodoList: ${$todoList.totalTodos()} item(s).\n \n`)
   let indentation = 0;
   function find(inArray) {
@@ -150,6 +178,3 @@ $todoList.insertTodo('build a robust web app', 'get a javascript developer job')
 
 // console.log($todoList)
 $todoList.displayTodos();
-
-
-
