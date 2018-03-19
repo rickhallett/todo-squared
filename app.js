@@ -2,21 +2,16 @@ console.log('concept.js loaded');
 
 /*
 Todo List:
-1. create recursive functions that 'walk' rootTodo, printing out each layer
-2. Prevent user from adding identical todos at the same level
+1. Start migration to MVC pattern
+2. Escape the console
 */
-
-
-//create a function that takes the parent text and child text
-//create the function on the data object, so that it can traverse with 'this'
-//if no parent text, make parent text 'root'
-
-//the data structure is a series of nested objects
-//each object needs a unique identifier, todo text, completed property, and a reference to both its parent and any child todos
 
 // =================================
 //          prototype
 // =================================
+
+//feed example data to browser console
+seedData();
 
 function TodoList() {
   this.$root = [];
@@ -30,18 +25,19 @@ function Todo(text, parent) {
   this.completed = false;
   this.dateCreated = new Date();
   this.subTodo = null;
-  this.edit = function(newText) {
-    this.next = newText;
-  }
 }
+
+Todo.prototype.edit = function(text) {
+  this.text = text;
+  this.dateModified = new Date();
+};
 
 //function to find todos by name
 //EXTRA FEATURE: store all todos with matching text, create array and return all these todos with link to parent
-//REFACTOR: all other todo methods should be able to use findTodo as their common base
-TodoList.prototype.findTodo = function (text) {
+TodoList.prototype.findTodo = function(text) {
   let foundTodo;
   return (function find(inArray) {
-    inArray.forEach(function (currentTodo, index) {
+    inArray.forEach(function(currentTodo, index) {
       //base case
       if (currentTodo.text === text) {
         foundTodo = currentTodo;
@@ -54,13 +50,13 @@ TodoList.prototype.findTodo = function (text) {
     });
     return foundTodo;
   })($todoList.$root);
-}
+};
 
 //function to add todos at named level
-TodoList.prototype.insertTodo = function (text, parent) {
+TodoList.prototype.insertTodo = function(text, parent) {
   if (parent) {
     return (function find(inArray) {
-      inArray.forEach(function (currentTodo, index) {
+      inArray.forEach(function(currentTodo, index) {
         //base case
         if (currentTodo.text === parent) {
           //if no array, initialise array
@@ -68,6 +64,7 @@ TodoList.prototype.insertTodo = function (text, parent) {
             currentTodo.subTodo = [];
           }
           currentTodo.subTodo.push(new Todo(text, parent));
+          return `"${text}" was inserted at "${parent}"`;
           //NB: does return stop for each?
           return;
         }
@@ -75,29 +72,28 @@ TodoList.prototype.insertTodo = function (text, parent) {
         if (currentTodo.subTodo !== null) {
           return find(currentTodo.subTodo);
         }
-
       });
-      return `"${text}" was inserted at "${parent}"`
     })($todoList.$root);
   } else {
     $todoList.$root.push(new Todo(text));
-    return `"${text}" was inserted at $root`
+    return `"${text}" was inserted at $root`;
   }
-}
+};
 
-TodoList.prototype.deleteTodo = function (text) {
+TodoList.prototype.deleteTodo = function(text) {
   let previousTodo;
   return (function find(inArray) {
-    inArray.forEach(function (currentTodo, index) {
+    inArray.forEach(function(currentTodo, index) {
       //base case
       if (currentTodo.text === text) {
-        if(previousTodo) {
+        if (previousTodo) {
           let index = previousTodo.subTodo.indexOf(currentTodo);
           previousTodo.subTodo.splice(index, 1);
           //if no previous todo (ie currently at $root)
         } else {
           let index = inArray.indexOf(currentTodo);
           inArray.splice(index, 1);
+          return `"${text}" was deleted`;
         }
         return;
       }
@@ -107,26 +103,23 @@ TodoList.prototype.deleteTodo = function (text) {
         previousTodo = currentTodo;
         return find(currentTodo.subTodo);
       }
-      
     });
-    return `"${text}" was deleted`
   })($todoList.$root);
-}
+};
 
 TodoList.prototype.toggleTodo = function(text) {
   return (function find(inArray) {
-    inArray.forEach(function (currentTodo, index) {
+    inArray.forEach(function(currentTodo, index) {
       //base case
       if (currentTodo.text === text) {
         currentTodo.completed = !currentTodo.completed;
         let shouldToggle = currentTodo.completed;
         //toggle children recursive case
         if (currentTodo.subTodo !== null) {
-          // debugger;
-          (function toggleAllChildren(child){
+          (function toggleAllChildren(child) {
             child.forEach(function(currentChild, index) {
               currentChild.completed = shouldToggle;
-              if(currentChild.subTodo !== null) {
+              if (currentChild.subTodo !== null) {
                 toggleAllChildren(currentChild.subTodo);
               }
             });
@@ -140,11 +133,11 @@ TodoList.prototype.toggleTodo = function(text) {
       }
     });
   })($todoList.$root);
-}
+};
 
 TodoList.prototype.toggleAll = function() {
   let areAllToggled = (function findIncompleteTodo(inArray) {
-    return inArray.every(function (currentTodo, index) {
+    return inArray.every(function(currentTodo, index) {
       //base case
       //if even one of the todos is not complete, set areAllToggled to false
       if (currentTodo.completed === false) return false;
@@ -157,7 +150,7 @@ TodoList.prototype.toggleAll = function() {
   })($todoList.$root);
 
   (function find(inArray) {
-    inArray.forEach(function(currentTodo){
+    inArray.forEach(function(currentTodo) {
       //base case
       currentTodo.completed = !areAllToggled;
       //recursive case
@@ -166,14 +159,15 @@ TodoList.prototype.toggleAll = function() {
       }
     });
   })($todoList.$root);
-}
+};
 
 TodoList.prototype.editTodo = function(text, newText) {
   return (function find(inArray) {
-    inArray.forEach(function (currentTodo, index) {
+    inArray.forEach(function(currentTodo, index) {
       //base case
       if (currentTodo.text === text) {
-        currentTodo.text = newText;
+        currentTodo.edit(newText);
+        return `"${text}" was edited to "${newText}"`;
         return;
       }
       //recursive case
@@ -181,14 +175,13 @@ TodoList.prototype.editTodo = function(text, newText) {
         return find(currentTodo.subTodo);
       }
     });
-    return `"${text}" was edited to "${newText}"`;
   })($todoList.$root);
-}
+};
 
-TodoList.prototype.totalTodos = function () {
+TodoList.prototype.totalTodos = function() {
   let counter = 0;
   return (function find(inArray) {
-    inArray.forEach(function (currentTodo, index) {
+    inArray.forEach(function(currentTodo, index) {
       counter++;
       //recursive case
       if (currentTodo.subTodo !== null) {
@@ -199,20 +192,20 @@ TodoList.prototype.totalTodos = function () {
     });
     return counter;
   })($todoList.$root);
-}
+};
 
-TodoList.prototype.displayTodos = function () {
-  console.log(`\nTodoList: ${$todoList.totalTodos()} item(s).\n \n`)
+TodoList.prototype.displayTodos = function() {
+  console.log(`\nTodoList: ${$todoList.totalTodos()} item(s).\n \n`);
   let indentation = 0;
   (function find(inArray) {
-    inArray.forEach(function (currentTodo, index, inArray) {
+    inArray.forEach(function(currentTodo, index, inArray) {
       let spaces = '';
       let completedMark = '( )';
       for (let i = 1; i <= indentation; i++) {
         spaces += '     ';
       }
-      if(currentTodo.completed === true) {
-        completedMark = '(x)'
+      if (currentTodo.completed === true) {
+        completedMark = '(x)';
       }
       console.log(`${completedMark}${spaces} ${index + 1} ${currentTodo.text}`);
       //recursive case
@@ -224,10 +217,11 @@ TodoList.prototype.displayTodos = function () {
     });
     indentation--;
   })($todoList.$root);
-}
+};
 
-const generate = function () {
-  const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const generate = function() {
+  const ALPHABET =
+    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const ID_LENGTH = 8;
   let rtn = '';
   for (let i = 0; i < ID_LENGTH; i++) {
@@ -237,26 +231,30 @@ const generate = function () {
     }
   }
   return rtn;
+};
+
+function seedData() {
+  let $todoList = new TodoList();
+  $todoList.insertTodo('Complete watchandcode');
+  $todoList.insertTodo('master javascript');
+  $todoList.insertTodo('Overthrow Gordon');
+  $todoList.insertTodo('climb the student ranks', 'Overthrow Gordon');
+  $todoList.insertTodo('consider reviewing some videos', 'Complete watchandcode');
+  $todoList.insertTodo('get a javascript developer job', 'master javascript');
+  $todoList.insertTodo('prototype nested todo list', 'master javascript');
+  $todoList.insertTodo('complete BYOA', 'master javascript');
+  $todoList.insertTodo('master vue.js', 'master javascript');
+  $todoList.insertTodo('complete tutorial', 'master vue.js');
+  $todoList.insertTodo('read documentation', 'master vue.js');
+  $todoList.insertTodo('implement TodoSquared', 'master vue.js');
+  $todoList.insertTodo('build a robust web app', 'get a javascript developer job');
+  $todoList.toggleTodo('climb the student ranks');
+  $todoList.toggleTodo('prototype nested todo list');
+  $todoList.toggleTodo('read documentation');
+  console.log($todoList)
+  $todoList.displayTodos();
 }
 
-let $todoList = new TodoList();
 
-$todoList.insertTodo('Complete watchandcode');
-$todoList.insertTodo('master javascript');
-$todoList.insertTodo('Overthrow Gordon');
-$todoList.insertTodo('climb the student ranks', 'Overthrow Gordon');
-$todoList.insertTodo('consider reviewing some videos', 'Complete watchandcode');
-$todoList.insertTodo('get a javascript developer job', 'master javascript');
-$todoList.insertTodo('prototype nested todo list', 'master javascript');
-$todoList.insertTodo('complete BYOA', 'master javascript');
-$todoList.insertTodo('master vue.js', 'master javascript');
-$todoList.insertTodo('complete tutorial', 'master vue.js');
-$todoList.insertTodo('read documentation', 'master vue.js');
-$todoList.insertTodo('implement TodoSquared', 'master vue.js');
-$todoList.insertTodo('build a robust web app', 'get a javascript developer job');
-$todoList.toggleTodo('climb the student ranks')
-$todoList.toggleTodo('prototype nested todo list')
-$todoList.toggleTodo('read documentation')
 
-// console.log($todoList)
-$todoList.displayTodos();
+
