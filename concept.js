@@ -3,6 +3,7 @@ console.log('concept.js loaded');
 /*
 Todo List:
 1. create recursive functions that 'walk' rootTodo, printing out each layer
+2. Prevent user from adding identical todos at the same level
 */
 
 
@@ -17,54 +18,13 @@ Todo List:
 //          prototype
 // =================================
 
-$todoListDemoData = {
-  $root: [
-    {
-      parent: '$root',
-      text: 'Complete watchandcode',
-      completed: false,
-      dateCreated: '19/04/2018',
-      subTodo: null
-    },
-    {
-      parent: '$root',
-      text: 'master js',
-      completed: false,
-      dateCreated: '19/04/2018',
-      subTodo: [
-        {
-          parent: 'master js',
-          text: 'master vue.js',
-          completed: false,
-          dateCreated: '19/04/2018',
-          subTodo: [
-          {
-            parent: 'master vue.js',
-            text: 'complete tutorial',
-            completed: false,
-            dateCreated: '19/04/2018',
-            subTodo: null
-          },
-          {
-            parent: 'master vue.js',
-            text: 'read documentation for each feature (don\'t rush)',
-            completed: false,
-            dateCreated: '19/04/2018',
-            subTodo: null
-          }
-        ]
-        }
-      ]
-    },
-  ]
-}
-
 function TodoList() {
   this.$root = [];
 }
 
 //function constructor to create todos
 function Todo(text, parent) {
+  this.id = generate();
   this.parent = parent || '$root';
   this.text = text;
   this.completed = false;
@@ -74,178 +34,122 @@ function Todo(text, parent) {
 
 //function to find todos by name
 //EXTRA FEATURE: store all todos with matching text, create array and return all these todos with link to parent
+//REFACTOR: all other todo methods should be able to use findTodo as their common base
 TodoList.prototype.findTodo = function (text) {
   let foundTodo;
-
   function find(inArray) {
-    inArray.forEach(function(currentTodo, index) {
+    inArray.forEach(function (currentTodo, index) {
       //recursive case
-      if(currentTodo.subTodo !== null) {
+      if (currentTodo.subTodo !== null) {
         return find(currentTodo.subTodo);
       }
       //base case
-      if(currentTodo.text === text) {
+      if (currentTodo.text === text) {
         foundTodo = currentTodo;
         return;
       }
     });
-
     return foundTodo;
   }
-  return find($todoListDemoData.$root);
+  return find($todoList.$root);
 }
 
 //function to add todos at named level
 TodoList.prototype.insertTodo = function (text, parent) {
   if (parent) {
-    // debugger;
     function find(inArray) {
       inArray.forEach(function (currentTodo, index) {
         //base case
         if (currentTodo.text === parent) {
-          //initialise array and insert todo
-          currentTodo.subTodo = [];
+          //if no array, initialise array
+          if(currentTodo.subTodo === null) {
+            currentTodo.subTodo = [];
+          }
           currentTodo.subTodo.push(new Todo(text, parent));
-          //does return stop for each
+          //does return stop for each?
           return;
         }
         //recursive case
         if (currentTodo.subTodo !== null) {
           return find(currentTodo.subTodo);
         }
+
       });
     }
-
     find($todoList.$root)
-
   } else {
     $todoList.$root.push(new Todo(text, parent));
   }
+}
+
+TodoList.prototype.totalTodos = function() {
+  let counter = 0;
+  function find(inArray) {
+    inArray.forEach(function (currentTodo, index) {
+      counter++;
+      //recursive case
+      if (currentTodo.subTodo !== null) {
+        return find(currentTodo.subTodo);
+      }
+      //base case
+      return;
+    });
+    return counter;
+  }
+  return find($todoList.$root);
+}
+
+TodoList.prototype.displayTodos = function() {
+  console.log(`\nTodoList: ${$todoList.totalTodos()} item(s).\n \n`)
+  let indentation = 0;
+  function find(inArray) {
+    inArray.forEach(function (currentTodo, index, inArray) {
+      let spaces = '';
+      for (let i = 1; i <= indentation; i++) {
+        spaces += '     ';
+      }
+      console.log(`${spaces} ${index + 1} ${currentTodo.text}`)
+      //recursive case
+      if (currentTodo.subTodo !== null) {
+        indentation++;
+        return find(currentTodo.subTodo);
+      }
+      return;
+    });
+    indentation--;
+  }
+  return find($todoList.$root);
+}
+
+const generate = function () {
+  const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const ID_LENGTH = 8;
+  let rtn = '';
+  for (let i = 0; i < ID_LENGTH; i++) {
+    rtn += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+    if (i === 2 || i === 5) {
+      rtn += '-';
+    }
+  }
+  return rtn;
 }
 
 let $todoList = new TodoList();
 
 $todoList.insertTodo('Complete watchandcode');
 $todoList.insertTodo('master javascript');
-$todoList.insertTodo('master js');
+$todoList.insertTodo('Overthrow Gordon');
 $todoList.insertTodo('consider reviewing some videos', 'Complete watchandcode');
 $todoList.insertTodo('get a javascript developer job', 'master javascript');
-$todoList.insertTodo('complete BYOA', 'master js');
+$todoList.insertTodo('complete BYOA', 'master javascript');
+$todoList.insertTodo('master vue.js', 'master javascript');
+$todoList.insertTodo('complete tutorial', 'master vue.js');
+$todoList.insertTodo('read documentation', 'master vue.js');
+$todoList.insertTodo('implement TodoSquared', 'master vue.js');
 $todoList.insertTodo('build a robust web app', 'get a javascript developer job');
 
-console.log($todoList)
+// console.log($todoList)
+$todoList.displayTodos();
 
 
 
-/*
-$todoList = {
-  $root: [
-    {
-      parent: '$root',
-      text: 'Complete watchandcode',
-      completed: false,
-      dateCreated: '19/04/2018',
-      subTodo: null
-    },
-    {
-      parent: '$root',
-      text: 'become a javascript ninja',
-      completed: false,
-      dateCreated: '19/04/2018',
-      subTodo: [
-        {
-          parent: 'become a javascript ninja',
-          text: 'complete BYOA',
-          completed: false,
-          dateCreated: '19/04/2018',
-          subTodo: [
-            {
-              parent: 'complete BYOA',
-              text: 'complete scope inheritance',
-              completed: false,
-              dateCreated: '19/04/2018',
-              subTodo: null
-            },
-            {
-              parent: 'complete BYOA',
-              text: 'move onto data parsing',
-              completed: false,
-              dateCreated: '19/04/2018',
-              subTodo: null
-            }
-          ]
-        },
-        {
-          parent: 'become a javascript ninja',
-          text: 'master vue.js',
-          completed: false,
-          dateCreated: '19/04/2018',
-          subTodo: [
-            {
-              parent: 'master vue.js',
-              text: 'complete tutorial and documentation',
-              completed: false,
-              dateCreated: '19/04/2018',
-              subTodo: null
-            },
-            {
-              parent: 'master vue.js',
-              text: 'created nested todo app with vue',
-              completed: false,
-              dateCreated: '19/04/2018',
-              subTodo: null
-            }
-          ]
-        },
-        {
-          text: 'beat Jonathan at javascript',
-          completed: false,
-          dateCreated: '19/04/2018',
-          subTodo: [
-            {
-              parent: 'beat Jonathan at javascript',
-              text: 'kick',
-              completed: false,
-              dateCreated: '19/04/2018',
-              subTodo: null
-            },
-            {
-              parent: 'beat Jonathan at javascript',
-              text: 'his',
-              completed: false,
-              dateCreated: '19/04/2018',
-              subTodo: null
-            },
-            {
-              parent: 'beat Jonathan at javascript',
-              text: 'ass',
-              completed: false,
-              dateCreated: '19/04/2018',
-              subTodo: null
-            }
-          ]
-        }
-      ]
-    },
-    {
-      parent: '$root', text: 'take out dog',
-      completed: false,
-      dateCreated: '19/04/2018',
-      subTodo: [
-        {
-          text: 'pick up her poo',
-          completed: false,
-          dateCreated: '19/04/2018',
-          subTodo: null
-        }
-      ]
-    },
-    {
-      parent: '$root', text: 'find another hobby',
-      completed: false,
-      dateCreated: '19/04/2018',
-      subTodo: null
-    }
-  ]
-};
-*/
