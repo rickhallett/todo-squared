@@ -42,14 +42,14 @@ TodoList.prototype.findTodo = function (text) {
   let foundTodo;
   return (function find(inArray) {
     inArray.forEach(function (currentTodo, index) {
-      //recursive case
-      if (currentTodo.subTodo !== null) {
-        return find(currentTodo.subTodo);
-      }
       //base case
       if (currentTodo.text === text) {
         foundTodo = currentTodo;
         return;
+      }
+      //recursive case
+      if (currentTodo.subTodo !== null) {
+        return find(currentTodo.subTodo);
       }
     });
     return foundTodo;
@@ -142,6 +142,32 @@ TodoList.prototype.toggleTodo = function(text) {
   })($todoList.$root);
 }
 
+TodoList.prototype.toggleAll = function() {
+  let areAllToggled = (function findIncompleteTodo(inArray) {
+    return inArray.every(function (currentTodo, index) {
+      //base case
+      //if even one of the todos is not complete, set areAllToggled to false
+      if (currentTodo.completed === false) return false;
+      //recursive case
+      if (currentTodo.subTodo !== null) {
+        findIncompleteTodo(currentTodo.subTodo);
+        return true;
+      }
+    });
+  })($todoList.$root);
+
+  (function find(inArray) {
+    inArray.forEach(function(currentTodo){
+      //base case
+      currentTodo.completed = !areAllToggled;
+      //recursive case
+      if (currentTodo.subTodo !== null) {
+        return find(currentTodo.subTodo);
+      }
+    });
+  })($todoList.$root);
+}
+
 TodoList.prototype.editTodo = function(text, newText) {
   return (function find(inArray) {
     inArray.forEach(function (currentTodo, index) {
@@ -188,7 +214,7 @@ TodoList.prototype.displayTodos = function () {
       if(currentTodo.completed === true) {
         completedMark = '(x)'
       }
-      console.log(`${completedMark}${spaces} ${index + 1} ${currentTodo.text}`)
+      console.log(`${completedMark}${spaces} ${index + 1} ${currentTodo.text}`);
       //recursive case
       if (currentTodo.subTodo !== null) {
         indentation++;
