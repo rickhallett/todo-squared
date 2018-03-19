@@ -30,6 +30,9 @@ function Todo(text, parent) {
   this.completed = false;
   this.dateCreated = new Date();
   this.subTodo = null;
+  this.edit = function(newText) {
+    this.next = newText;
+  }
 }
 
 //function to find todos by name
@@ -37,7 +40,7 @@ function Todo(text, parent) {
 //REFACTOR: all other todo methods should be able to use findTodo as their common base
 TodoList.prototype.findTodo = function (text) {
   let foundTodo;
-  function find(inArray) {
+  return (function find(inArray) {
     inArray.forEach(function (currentTodo, index) {
       //recursive case
       if (currentTodo.subTodo !== null) {
@@ -50,14 +53,13 @@ TodoList.prototype.findTodo = function (text) {
       }
     });
     return foundTodo;
-  }
-  return find($todoList.$root);
+  })($todoList.$root);
 }
 
 //function to add todos at named level
 TodoList.prototype.insertTodo = function (text, parent) {
   if (parent) {
-    function find(inArray) {
+    return (function find(inArray) {
       inArray.forEach(function (currentTodo, index) {
         //base case
         if (currentTodo.text === parent) {
@@ -75,16 +77,17 @@ TodoList.prototype.insertTodo = function (text, parent) {
         }
 
       });
-    }
-    find($todoList.$root)
+      return `"${text}" was inserted at "${parent}"`
+    })($todoList.$root);
   } else {
-    $todoList.$root.push(new Todo(text, parent));
+    $todoList.$root.push(new Todo(text));
+    return `"${text}" was inserted at $root`
   }
 }
 
 TodoList.prototype.deleteTodo = function (text) {
   let previousTodo;
-  function find(inArray) {
+  return (function find(inArray) {
     inArray.forEach(function (currentTodo, index) {
       //base case
       if (currentTodo.text === text) {
@@ -106,13 +109,12 @@ TodoList.prototype.deleteTodo = function (text) {
       }
       
     });
-  }
-  return find($todoList.$root);
+    return `"${text}" was deleted`
+  })($todoList.$root);
 }
 
 TodoList.prototype.toggleTodo = function(text) {
-  let foundTodo;
-  function find(inArray) {
+  return (function find(inArray) {
     inArray.forEach(function (currentTodo, index) {
       //base case
       if (currentTodo.text === text) {
@@ -137,14 +139,12 @@ TodoList.prototype.toggleTodo = function(text) {
         return find(currentTodo.subTodo);
       }
     });
-    return foundTodo;
-  }
-  return find($todoList.$root);
+  })($todoList.$root);
 }
 
 TodoList.prototype.totalTodos = function () {
   let counter = 0;
-  function find(inArray) {
+  return (function find(inArray) {
     inArray.forEach(function (currentTodo, index) {
       counter++;
       //recursive case
@@ -155,14 +155,13 @@ TodoList.prototype.totalTodos = function () {
       return;
     });
     return counter;
-  }
-  return find($todoList.$root);
+  })($todoList.$root);
 }
 
 TodoList.prototype.displayTodos = function () {
   console.log(`\nTodoList: ${$todoList.totalTodos()} item(s).\n \n`)
   let indentation = 0;
-  function find(inArray) {
+  (function find(inArray) {
     inArray.forEach(function (currentTodo, index, inArray) {
       let spaces = '';
       let completedMark = '( )';
@@ -181,8 +180,7 @@ TodoList.prototype.displayTodos = function () {
       return;
     });
     indentation--;
-  }
-  return find($todoList.$root);
+  })($todoList.$root);
 }
 
 const generate = function () {
