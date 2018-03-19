@@ -142,6 +142,23 @@ TodoList.prototype.toggleTodo = function(text) {
   })($todoList.$root);
 }
 
+TodoList.prototype.editTodo = function(text, newText) {
+  return (function find(inArray) {
+    inArray.forEach(function (currentTodo, index) {
+      //base case
+      if (currentTodo.text === text) {
+        currentTodo.text = newText;
+        return;
+      }
+      //recursive case
+      if (currentTodo.subTodo !== null) {
+        return find(currentTodo.subTodo);
+      }
+    });
+    return `"${text}" was edited to "${newText}"`;
+  })($todoList.$root);
+}
+
 TodoList.prototype.totalTodos = function () {
   let counter = 0;
   return (function find(inArray) {
