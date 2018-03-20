@@ -1,5 +1,3 @@
-console.log('concept.js loaded');
-
 /*
 Todo List:
 1. Start migration to MVC pattern
@@ -7,7 +5,7 @@ Todo List:
 */
 
 // =================================
-//          prototype
+//        escape the console
 // =================================
 
 function TodoList() {
@@ -193,64 +191,39 @@ TodoList.prototype.totalTodos = function() {
   })($todoList.$root);
 };
 
+/*********************************************
+ *          UNDER CONSTRUCTION *
+ ********************************************/
+
 //option 1: construct each component seperately, using logic to determine type/class, appending elements to DOM sequentially
 //option 1.1: it might be good to have seperate helper functions that can create these elements
-  //todo__subTask uls will need to be appendChild to the master todo containers
-  //within this ul, we can repeat .todos => .todo => .todo__task => checkbox/label -> destroy button
+//todo__subTask uls will need to be appendChild to the master todo containers
+//within this ul, we can repeat .todos => .todo => .todo__task => checkbox/label -> destroy button
 //option 2: construct one compound element, using position in recursion and logic to determine type/class, appending elements to DOM once
 TodoList.prototype.render = function() {
-  //print root todo
+  //-- Basic Algorithm --
+  //iterate
+    //print root todo
     //check if has children
     //recurse into children
-    //print children,
-    //recurse into further children
-  
+      //iterate
+        //print children
+        //...continue recursion
+
+  //grab master todo list
   let todoListUL = document.getElementById('todo-list');
+  //insert one dummy todo
+  todoListUL.append(constructSingleTodoDOM());
 
-  //create containing li that wraps around main todo and its subtasks
-  let todoWrapper = document.createElement('li');
-  todoWrapper.className = 'todos';
-
-  //create todo div to create consistent todo styling
-  let todoDIV = document.createElement('div');
-  todoDIV.className = 'todo';
-
-  //create seperate todo__task div so that parent flexbox property has more organised control
-  let todo__taskDIV = document.createElement('div');
-  todo__taskDIV.className = 'todo__task';
-  
-  //create checkbox and insert it into todo__task div
-  let toggleCheckbox = document.createElement('input');
-  toggleCheckbox.type = 'checkbox';
-  toggleCheckbox.id = 'toggle';
-  todo__taskDIV.appendChild(toggleCheckbox);
-
-  //create todo text label and insert it into todo__task div
-  let todoText = document.createElement('label');
-  todoText.textContent = 'this todo was created by javascript!';
-  todo__taskDIV.appendChild(todoText);
-
-  //insert compound todo__task div into parent todo div
-  todoDIV.appendChild(todo__taskDIV);
-
-  //create destroy button and insert it into parent todo div
-  let destroyButton = document.createElement('button');
-  destroyButton.className = 'destroy';
-  destroyButton.textContent = 'x';
-  todoDIV.appendChild(destroyButton);
-
-  //place compound todo div into the master todo container
-  todoWrapper.appendChild(todoDIV);
-
-  todoListUL.append(todoWrapper);
-  console.log(todoListUL);
-  
-  (function constructDOM(fromArray){
+  (function constructDOM(fromArray) {
     fromArray.forEach(function(currentTodo, index) {
+      //base case
 
-    })
+      //recursive case
+      return constructDOM
+  });
   })($todoList.$root);
-}
+};
 
 /*
 if (node.parentNode) {
@@ -259,6 +232,10 @@ if (node.parentNode) {
   node.parentNode.removeChild(node);
 }
 */
+
+/*********************************************
+ *          UNDER CONSTRUCTION *
+ ********************************************/
 
 TodoList.prototype.displayTodos = function() {
   console.log(`\nTodoList: ${$todoList.totalTodos()} item(s).\n \n`);
@@ -285,42 +262,9 @@ TodoList.prototype.displayTodos = function() {
   })($todoList.$root);
 };
 
-const generate = function() {
-  const ALPHABET =
-    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const ID_LENGTH = 8;
-  let rtn = '';
-  for (let i = 0; i < ID_LENGTH; i++) {
-    rtn += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
-    if (i === 2 || i === 5) {
-      rtn += '-';
-    }
-  }
-  return rtn;
-};
 
-//feed example data to browser console
 
-let $todoList = new TodoList();
-$todoList.insertTodo('Master watchandcode');
-$todoList.insertTodo('Become a Javascript ninja');
-$todoList.insertTodo('Overthrow Gordon');
-$todoList.insertTodo('climb the student ranks', 'Overthrow Gordon');
-$todoList.insertTodo('consider reviewing some videos', 'Master watchandcode');
-$todoList.insertTodo('get a javascript developer job', 'Become a Javascript ninja');
-$todoList.insertTodo('prototype nested todo list', 'Become a Javascript ninja');
-$todoList.insertTodo('complete BYOA', 'Become a Javascript ninja');
-$todoList.insertTodo('master vue.js', 'Become a Javascript ninja');
-$todoList.insertTodo('complete tutorial', 'master vue.js');
-$todoList.insertTodo('read documentation', 'master vue.js');
-$todoList.insertTodo('implement TodoSquared', 'master vue.js');
-$todoList.insertTodo(
-  'build a robust web app',
-  'get a javascript developer job'
-);
-$todoList.toggleTodo('climb the student ranks');
-$todoList.toggleTodo('prototype nested todo list');
-$todoList.toggleTodo('read documentation');
+
 console.log($todoList);
 $todoList.displayTodos();
 
