@@ -8,13 +8,68 @@
 
   <div id="app">
     <div id="header">
-      <input id="enter">
+      <input type="checkbox" id="toggle-all">
+      <input id="enter" placeholder="what would you like todo?">
       <button>Add Todo</button>
     </div>
     <div id="todo-list">
-        <li class="todo">Complete WatchandCode</li>
-        <li class="sub-todo">Possibly review some videos</li>
-        <li class="sub-todo">TodoSquared: The Project</li>
+      <div class="todo">
+        <input type="checkbox" id="toggle">
+        <li>Master WatchandCode</li>
+        <button class="destroy">x</button>
+      </div>
+      <div class="sub-todo">
+        <input type="checkbox" id="toggle">
+        <li>Possibly review some videos</li>
+        <button class="destroy">x</button>
+        <input type="checkbox" id="toggle">
+        <li>TodoSquared: The Project</li>
+        <button class="destroy">x</button>
+        <div class="todo">
+          <input type="checkbox" id="toggle">
+          <li>Migrate to DOM</li>
+          <button class="destroy">x</button>
+        </div>
+        <div class="sub-todo">
+          <input type="checkbox" id="toggle">
+          <li>have dynamic todo CSS positioning</li>
+          <button class="destroy">x</button>
+          <input type="checkbox" id="toggle">
+          <li>Re-work displayTodos to output to DOM</li>
+          <button class="destroy">x</button>
+        </div>
+      </div>
+      <div class="todo">
+        <input type="checkbox" id="toggle">
+        <li>Become a Javascript ninja</li>
+        <button class="destroy">x</button>
+      </div>
+      <div class="sub-todo">
+        <input type="checkbox" id="toggle">
+        <li>Land first developer job</li>
+        <button class="destroy">x</button>
+        <div class="todo">
+          <input type="checkbox" id="toggle">
+          <li>Conquer Vue.js</li>
+          <button class="destroy">x</button>
+        </div>
+        <div class="sub-todo">
+          <input type="checkbox" id="toggle">
+          <li>Complete tutorial</li>
+          <button class="destroy">x</button>
+          <input type="checkbox" id="toggle">
+          <li>Read documentation</li>
+          <button class="destroy">x</button>
+          <input type="checkbox" id="toggle">
+          <li>Implement TodoSquared</li>
+          <button class="destroy">x</button>
+        </div>
+      </div>
+      <div class="todo">
+        <input type="checkbox" id="toggle">
+        <li>WTF CSS</li>
+        <button class="destroy">x</button>
+      </div>
     </div>
   </div>
   

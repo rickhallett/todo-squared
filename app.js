@@ -133,6 +133,7 @@ TodoList.prototype.toggleTodo = function(text) {
 };
 
 TodoList.prototype.toggleAll = function() {
+  //use 'every' to determine if all todos are toggled
   let areAllToggled = (function findIncompleteTodo(inArray) {
     return inArray.every(function(currentTodo, index) {
       //base case
@@ -146,6 +147,7 @@ TodoList.prototype.toggleAll = function() {
     });
   })($todoList.$root);
 
+  //use 'forEach' to set all todos to either complete or non-complete
   (function find(inArray) {
     inArray.forEach(function(currentTodo) {
       //base case
@@ -233,15 +235,15 @@ const generate = function() {
 //feed example data to browser console
 
 let $todoList = new TodoList();
-$todoList.insertTodo('Complete watchandcode');
-$todoList.insertTodo('master javascript');
+$todoList.insertTodo('Master watchandcode');
+$todoList.insertTodo('Become a Javascript ninja');
 $todoList.insertTodo('Overthrow Gordon');
 $todoList.insertTodo('climb the student ranks', 'Overthrow Gordon');
-$todoList.insertTodo('consider reviewing some videos', 'Complete watchandcode');
-$todoList.insertTodo('get a javascript developer job', 'master javascript');
-$todoList.insertTodo('prototype nested todo list', 'master javascript');
-$todoList.insertTodo('complete BYOA', 'master javascript');
-$todoList.insertTodo('master vue.js', 'master javascript');
+$todoList.insertTodo('consider reviewing some videos', 'Master watchandcode');
+$todoList.insertTodo('get a javascript developer job', 'Become a Javascript ninja');
+$todoList.insertTodo('prototype nested todo list', 'Become a Javascript ninja');
+$todoList.insertTodo('complete BYOA', 'Become a Javascript ninja');
+$todoList.insertTodo('master vue.js', 'Become a Javascript ninja');
 $todoList.insertTodo('complete tutorial', 'master vue.js');
 $todoList.insertTodo('read documentation', 'master vue.js');
 $todoList.insertTodo('implement TodoSquared', 'master vue.js');
