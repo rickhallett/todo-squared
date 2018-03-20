@@ -5,73 +5,121 @@
   <link rel="stylesheet" type="text/css" href="app.css">
 </head>
 <body>
+    <div id="app">
+      <div class="todoContainer">
+        <div id="header">
+          <input type="checkbox" id="toggle-all">
+          <input id="enter" placeholder="what would you like todo?">
+          <button id="add-todo">Add Todo</button>
+        </div>
 
-  <div id="app">
-    <div id="header">
-      <input type="checkbox" id="toggle-all">
-      <input id="enter" placeholder="what would you like todo?">
-      <button>Add Todo</button>
+        <ul id="todo-list">
+          <!-- Since everything is a list i would wrap it in a UL for all todos. -->
+  
+          <li class="todos">
+            <!-- We create a list that will wrap around the main todo and all the subtasks -->
+            <div class="todo">
+              <!-- Since all todos will look the same we create a class called .todo that shares the same styling with -->
+              <div class="todo__task">
+                <!-- I wrap the input and text together in a todo__task class, since it makes sense that they are close together and this will help me to use flexbox property on parent div .todo (check css) -->
+                <input type="checkbox" id="toggle" />
+                <label>Master WatchandCode</label>
+              </div>
+              <button class="destroy">x</button>
+            </div>
+            <ul class="todo__subTask">
+              <!-- Since its a subtask (child) of li .todo we nest it inside -->
+              <li class="todos">
+                <!-- Then we reapeat the same markup as always, since all the toods share the same styling appart form the indenting which the UL .todo__subTask parent handles -->
+                <div class="todo">
+                  <div class="todo__task">
+                    <input type="checkbox" id="toggle">
+                    <label>Possibly review some videos</label>
+                  </div>
+                  <button class="destroy">x</button>
+                </div>
+              </li>
+              <li class="todos">
+                <div class="todo">
+                  <div class="todo__task">
+                    <input type="checkbox" id="toggle">
+                    <label>TodoSquared: The Project</label>
+                  </div>
+                  <button class="destroy">x</button>
+                </div>
+              </li>
+            </ul>
+          </li>
+          <!-- .todos ends -->
+  
+          <li class="todos">
+            <div class="todo">
+              <div class="todo__task">
+                <input type="checkbox" id="toggle" />
+                <label>Become a Javascript ninja</label>
+              </div>
+              <button class="destroy">x</button>
+            </div>
+            <ul class="todo__subTask">
+              <li class="todos">
+                <div class="todo">
+                  <div class="todo__task">
+                    <input type="checkbox" id="toggle">
+                    <label>Land first developer job</label>
+                  </div>
+                  <button class="destroy">x</button>
+                </div>
+              </li>
+              <li class="todos">
+                <div class="todo">
+                  <div class="todo__task">
+                    <input type="checkbox" id="toggle">
+                    <label>Conquer Vue.js</label>
+                  </div>
+                  <button class="destroy">x</button>
+                </div>
+              </li>
+              <ul class="todo__subTask">
+                <!-- Just showing that this markup is verstaile and allows you easily to nest additional subtask to subtasks without needing new classe or styling -->
+                <li class="todos">
+                  <div class="todo">
+                    <div class="todo__task">
+                      <input type="checkbox" id="toggle">
+                      <label>Complete tutorial</label>
+                    </div>
+                    <button class="destroy">x</button>
+                  </div>
+                </li>
+                <li class="todos">
+                  <div class="todo">
+                    <div class="todo__task">
+                      <input type="checkbox" id="toggle">
+                      <label>Read documentation</label>
+                    </div>
+                    <button class="destroy">x</button>
+                  </div>
+                </li>
+              </ul>
+            </ul>
+          </li>
+          <!-- .todos ends -->
+  
+          <li class="todos">
+            <div class="todo">
+              <div class="todo__task">
+                <input type="checkbox" id="toggle" />
+                <label>Upgrade HTML/CSS skills</label>
+              </div>
+              <button class="destroy">x</button>
+            </div>
+          </li>
+          <!-- .todos ends -->
+  
+        </ul>
+        <!-- .todo-list (main ul)-->
+      </div>
     </div>
-    <div id="todo-list">
-      <div class="todo">
-        <input type="checkbox" id="toggle">
-        <li>Master WatchandCode</li>
-        <button class="destroy">x</button>
-      </div>
-      <div class="sub-todo">
-        <input type="checkbox" id="toggle">
-        <li>Possibly review some videos</li>
-        <button class="destroy">x</button>
-        <input type="checkbox" id="toggle">
-        <li>TodoSquared: The Project</li>
-        <button class="destroy">x</button>
-        <div class="todo">
-          <input type="checkbox" id="toggle">
-          <li>Migrate to DOM</li>
-          <button class="destroy">x</button>
-        </div>
-        <div class="sub-todo">
-          <input type="checkbox" id="toggle">
-          <li>have dynamic todo CSS positioning</li>
-          <button class="destroy">x</button>
-          <input type="checkbox" id="toggle">
-          <li>Re-work displayTodos to output to DOM</li>
-          <button class="destroy">x</button>
-        </div>
-      </div>
-      <div class="todo">
-        <input type="checkbox" id="toggle">
-        <li>Become a Javascript ninja</li>
-        <button class="destroy">x</button>
-      </div>
-      <div class="sub-todo">
-        <input type="checkbox" id="toggle">
-        <li>Land first developer job</li>
-        <button class="destroy">x</button>
-        <div class="todo">
-          <input type="checkbox" id="toggle">
-          <li>Conquer Vue.js</li>
-          <button class="destroy">x</button>
-        </div>
-        <div class="sub-todo">
-          <input type="checkbox" id="toggle">
-          <li>Complete tutorial</li>
-          <button class="destroy">x</button>
-          <input type="checkbox" id="toggle">
-          <li>Read documentation</li>
-          <button class="destroy">x</button>
-          <input type="checkbox" id="toggle">
-          <li>Implement TodoSquared</li>
-          <button class="destroy">x</button>
-        </div>
-      </div>
-      <div class="todo">
-        <input type="checkbox" id="toggle">
-        <li>WTF CSS</li>
-        <button class="destroy">x</button>
-      </div>
-    </div>
-  </div>
+  </body>
   
   <script src="app.js"></script>
 </body>
