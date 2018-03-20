@@ -1,0 +1,29 @@
+#app {
+  margin: 50px;
+  border: solid grey 3px;
+  min-height: 400px;
+}
+
+li {
+  list-style-type: none;
+  margin-left: 15px;
+  margin-bottom: 5px;
+}
+
+#header {
+  margin: 15px;
+}
+
+input {
+  min-width: 250px;
+}
+
+.todo {
+
+}
+
+.sub-todo {
+  position: relative;
+  transform: translate(20px);
+  color: grey;
+}

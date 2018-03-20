@@ -10,9 +10,6 @@ Todo List:
 //          prototype
 // =================================
 
-//feed example data to browser console
-seedData();
-
 function TodoList() {
   this.$root = [];
 }
@@ -233,28 +230,27 @@ const generate = function() {
   return rtn;
 };
 
-function seedData() {
-  let $todoList = new TodoList();
-  $todoList.insertTodo('Complete watchandcode');
-  $todoList.insertTodo('master javascript');
-  $todoList.insertTodo('Overthrow Gordon');
-  $todoList.insertTodo('climb the student ranks', 'Overthrow Gordon');
-  $todoList.insertTodo('consider reviewing some videos', 'Complete watchandcode');
-  $todoList.insertTodo('get a javascript developer job', 'master javascript');
-  $todoList.insertTodo('prototype nested todo list', 'master javascript');
-  $todoList.insertTodo('complete BYOA', 'master javascript');
-  $todoList.insertTodo('master vue.js', 'master javascript');
-  $todoList.insertTodo('complete tutorial', 'master vue.js');
-  $todoList.insertTodo('read documentation', 'master vue.js');
-  $todoList.insertTodo('implement TodoSquared', 'master vue.js');
-  $todoList.insertTodo('build a robust web app', 'get a javascript developer job');
-  $todoList.toggleTodo('climb the student ranks');
-  $todoList.toggleTodo('prototype nested todo list');
-  $todoList.toggleTodo('read documentation');
-  console.log($todoList)
-  $todoList.displayTodos();
-}
+//feed example data to browser console
 
-
-
-
+let $todoList = new TodoList();
+$todoList.insertTodo('Complete watchandcode');
+$todoList.insertTodo('master javascript');
+$todoList.insertTodo('Overthrow Gordon');
+$todoList.insertTodo('climb the student ranks', 'Overthrow Gordon');
+$todoList.insertTodo('consider reviewing some videos', 'Complete watchandcode');
+$todoList.insertTodo('get a javascript developer job', 'master javascript');
+$todoList.insertTodo('prototype nested todo list', 'master javascript');
+$todoList.insertTodo('complete BYOA', 'master javascript');
+$todoList.insertTodo('master vue.js', 'master javascript');
+$todoList.insertTodo('complete tutorial', 'master vue.js');
+$todoList.insertTodo('read documentation', 'master vue.js');
+$todoList.insertTodo('implement TodoSquared', 'master vue.js');
+$todoList.insertTodo(
+  'build a robust web app',
+  'get a javascript developer job'
+);
+$todoList.toggleTodo('climb the student ranks');
+$todoList.toggleTodo('prototype nested todo list');
+$todoList.toggleTodo('read documentation');
+console.log($todoList);
+$todoList.displayTodos();
