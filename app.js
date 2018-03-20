@@ -33,8 +33,8 @@ Todo.prototype.edit = function(text) {
 //EXTRA FEATURE: store all todos with matching text, create array and return all these todos with link to parent
 TodoList.prototype.findTodo = function(text) {
   let foundTodo;
-  return (function find(inArray) {
-    inArray.forEach(function(currentTodo, index) {
+  return (function findIn(array) {
+    array.forEach(function(currentTodo) {
       //base case
       if (currentTodo.text === text) {
         foundTodo = currentTodo;
@@ -42,7 +42,7 @@ TodoList.prototype.findTodo = function(text) {
       }
       //recursive case
       if (currentTodo.subTodo !== null) {
-        return find(currentTodo.subTodo);
+        return findIn(currentTodo.subTodo);
       }
     });
     return foundTodo;
@@ -52,8 +52,8 @@ TodoList.prototype.findTodo = function(text) {
 //function to add todos at named level
 TodoList.prototype.insertTodo = function(text, parent) {
   if (parent) {
-    return (function find(inArray) {
-      inArray.forEach(function(currentTodo, index) {
+    return (function insertIn(array) {
+      array.forEach(function(currentTodo) {
         //base case
         if (currentTodo.text === parent) {
           //if no array, initialise array
@@ -67,7 +67,7 @@ TodoList.prototype.insertTodo = function(text, parent) {
         }
         //recursive case
         if (currentTodo.subTodo !== null) {
-          return find(currentTodo.subTodo);
+          return insertIn(currentTodo.subTodo);
         }
       });
     })($todoList.$root);
@@ -79,8 +79,8 @@ TodoList.prototype.insertTodo = function(text, parent) {
 
 TodoList.prototype.deleteTodo = function(text) {
   let previousTodo;
-  return (function find(inArray) {
-    inArray.forEach(function(currentTodo, index) {
+  return (function deleteIn(array) {
+    array.forEach(function(currentTodo) {
       //base case
       if (currentTodo.text === text) {
         if (previousTodo) {
@@ -88,8 +88,8 @@ TodoList.prototype.deleteTodo = function(text) {
           previousTodo.subTodo.splice(index, 1);
           //if no previous todo (ie currently at $root)
         } else {
-          let index = inArray.indexOf(currentTodo);
-          inArray.splice(index, 1);
+          let index = array.indexOf(currentTodo);
+          array.splice(index, 1);
           return `"${text}" was deleted`;
         }
         return;
@@ -98,15 +98,15 @@ TodoList.prototype.deleteTodo = function(text) {
       if (currentTodo.subTodo !== null) {
         //store previous todo for deletion
         previousTodo = currentTodo;
-        return find(currentTodo.subTodo);
+        return deleteIn(currentTodo.subTodo);
       }
     });
   })($todoList.$root);
 };
 
 TodoList.prototype.toggleTodo = function(text) {
-  return (function find(inArray) {
-    inArray.forEach(function(currentTodo, index) {
+  return (function toggleIn(array) {
+    array.forEach(function(currentTodo) {
       //base case
       if (currentTodo.text === text) {
         currentTodo.completed = !currentTodo.completed;
@@ -114,7 +114,7 @@ TodoList.prototype.toggleTodo = function(text) {
         //toggle children recursive case
         if (currentTodo.subTodo !== null) {
           (function toggleAllChildren(child) {
-            child.forEach(function(currentChild, index) {
+            child.forEach(function(currentChild) {
               currentChild.completed = shouldToggle;
               if (currentChild.subTodo !== null) {
                 toggleAllChildren(currentChild.subTodo);
@@ -126,7 +126,7 @@ TodoList.prototype.toggleTodo = function(text) {
       }
       //single nested recursive case
       if (currentTodo.subTodo !== null) {
-        return find(currentTodo.subTodo);
+        return toggleIn(currentTodo.subTodo);
       }
     });
   })($todoList.$root);
@@ -134,8 +134,8 @@ TodoList.prototype.toggleTodo = function(text) {
 
 TodoList.prototype.toggleAll = function() {
   //use 'every' to determine if all todos are toggled
-  let areAllToggled = (function findIncompleteTodo(inArray) {
-    return inArray.every(function(currentTodo, index) {
+  let areAllToggled = (function findIncompleteTodo(array) {
+    return array.every(function(currentTodo) {
       //base case
       //if even one of the todos is not complete, set areAllToggled to false
       if (currentTodo.completed === false) return false;
@@ -148,21 +148,21 @@ TodoList.prototype.toggleAll = function() {
   })($todoList.$root);
 
   //use 'forEach' to set all todos to either complete or non-complete
-  (function find(inArray) {
-    inArray.forEach(function(currentTodo) {
+  (function toggleAllIn(array) {
+    array.forEach(function(currentTodo) {
       //base case
       currentTodo.completed = !areAllToggled;
       //recursive case
       if (currentTodo.subTodo !== null) {
-        return find(currentTodo.subTodo);
+        return toggleAllIn(currentTodo.subTodo);
       }
     });
   })($todoList.$root);
 };
 
 TodoList.prototype.editTodo = function(text, newText) {
-  return (function find(inArray) {
-    inArray.forEach(function(currentTodo, index) {
+  return (function editIn(array) {
+    array.forEach(function(currentTodo) {
       //base case
       if (currentTodo.text === text) {
         currentTodo.edit(newText);
@@ -171,7 +171,7 @@ TodoList.prototype.editTodo = function(text, newText) {
       }
       //recursive case
       if (currentTodo.subTodo !== null) {
-        return find(currentTodo.subTodo);
+        return editIn(currentTodo.subTodo);
       }
     });
   })($todoList.$root);
@@ -179,12 +179,12 @@ TodoList.prototype.editTodo = function(text, newText) {
 
 TodoList.prototype.totalTodos = function() {
   let counter = 0;
-  return (function find(inArray) {
-    inArray.forEach(function(currentTodo, index) {
+  return (function countIn(array) {
+    array.forEach(function(currentTodo) {
       counter++;
       //recursive case
       if (currentTodo.subTodo !== null) {
-        return find(currentTodo.subTodo);
+        return countIn(currentTodo.subTodo);
       }
       //base case
       return;
@@ -193,11 +193,78 @@ TodoList.prototype.totalTodos = function() {
   })($todoList.$root);
 };
 
+//option 1: construct each component seperately, using logic to determine type/class, appending elements to DOM sequentially
+//option 1.1: it might be good to have seperate helper functions that can create these elements
+  //todo__subTask uls will need to be appendChild to the master todo containers
+  //within this ul, we can repeat .todos => .todo => .todo__task => checkbox/label -> destroy button
+//option 2: construct one compound element, using position in recursion and logic to determine type/class, appending elements to DOM once
+TodoList.prototype.render = function() {
+  //print root todo
+    //check if has children
+    //recurse into children
+    //print children,
+    //recurse into further children
+  
+  let todoListUL = document.getElementById('todo-list');
+
+  //create containing li that wraps around main todo and its subtasks
+  let todoWrapper = document.createElement('li');
+  todoWrapper.className = 'todos';
+
+  //create todo div to create consistent todo styling
+  let todoDIV = document.createElement('div');
+  todoDIV.className = 'todo';
+
+  //create seperate todo__task div so that parent flexbox property has more organised control
+  let todo__taskDIV = document.createElement('div');
+  todo__taskDIV.className = 'todo__task';
+  
+  //create checkbox and insert it into todo__task div
+  let toggleCheckbox = document.createElement('input');
+  toggleCheckbox.type = 'checkbox';
+  toggleCheckbox.id = 'toggle';
+  todo__taskDIV.appendChild(toggleCheckbox);
+
+  //create todo text label and insert it into todo__task div
+  let todoText = document.createElement('label');
+  todoText.textContent = 'this todo was created by javascript!';
+  todo__taskDIV.appendChild(todoText);
+
+  //insert compound todo__task div into parent todo div
+  todoDIV.appendChild(todo__taskDIV);
+
+  //create destroy button and insert it into parent todo div
+  let destroyButton = document.createElement('button');
+  destroyButton.className = 'destroy';
+  destroyButton.textContent = 'x';
+  todoDIV.appendChild(destroyButton);
+
+  //place compound todo div into the master todo container
+  todoWrapper.appendChild(todoDIV);
+
+  todoListUL.append(todoWrapper);
+  console.log(todoListUL);
+  
+  (function constructDOM(fromArray){
+    fromArray.forEach(function(currentTodo, index) {
+
+    })
+  })($todoList.$root);
+}
+
+/*
+if (node.parentNode) {
+  // remove a node from the tree, unless
+  // it's not in the tree already
+  node.parentNode.removeChild(node);
+}
+*/
+
 TodoList.prototype.displayTodos = function() {
   console.log(`\nTodoList: ${$todoList.totalTodos()} item(s).\n \n`);
   let indentation = 0;
-  (function find(inArray) {
-    inArray.forEach(function(currentTodo, index, inArray) {
+  (function print(array) {
+    array.forEach(function(currentTodo, index) {
       let spaces = '';
       let completedMark = '( )';
       for (let i = 1; i <= indentation; i++) {
@@ -210,7 +277,7 @@ TodoList.prototype.displayTodos = function() {
       //recursive case
       if (currentTodo.subTodo !== null) {
         indentation++;
-        return find(currentTodo.subTodo);
+        return print(currentTodo.subTodo);
       }
       return;
     });
@@ -256,3 +323,5 @@ $todoList.toggleTodo('prototype nested todo list');
 $todoList.toggleTodo('read documentation');
 console.log($todoList);
 $todoList.displayTodos();
+
+$todoList.render();

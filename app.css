@@ -47,13 +47,6 @@ body {
 		text-decoration: none;
 	}
 
-
-	/* ============================= */
-
-	/* Delete button CSS begins here */
-
-	/* ============================= */
-
 	.destroy {
 		border: none;
 		font-size: 15px;
@@ -69,30 +62,9 @@ body {
 		cursor: pointer;
 	}
 
-	/* =========================== */
-
-	/* Delete button CSS ends here */
-
-	/* =========================== */
-
-	.todo.completed {
-		text-decoration-line: line-through;
-	}
-
-	.sub-todo.completed {
-		text-decoration-line: line-through;
-	}
-
-	.sub-todo {
-		position: relative;
-		transform: translate(20px);
-		color: grey;
-	}
-
-
-	/************************************************************************************************************
+	/*************
 	 Mikael CSS 
-	 ************************************************************************************************************/
+	 ************/
 
 	.todoContainer {
 		padding: 20px;
@@ -104,10 +76,6 @@ body {
 
 	#toggle {
 		margin: 0;
-	}
-
-	.todo__subTask {
-		padding-left: 20px;
 	}
 
 	ul {
@@ -128,3 +96,13 @@ body {
 		/* This property counts all the children and spaces them accordingly, since we ony have to children .todo__task and the checkbox it will space them to the left and right edge */
 		align-items: center;
 	}
+
+	.todo__subTask {
+		padding-left: 20px;
+	}
+
+	.todo__subTask label {
+		color: grey;
+	}
+
+

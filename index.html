@@ -9,13 +9,14 @@
       <div class="todoContainer">
         <div id="header">
           <input type="checkbox" id="toggle-all">
-          <input id="enter" placeholder="what would you like todo?">
+          <input id="enter" placeholder="What would you like todo?">
           <button id="add-todo">Add Todo</button>
         </div>
 
         <ul id="todo-list">
           <!-- Since everything is a list i would wrap it in a UL for all todos. -->
   
+
           <li class="todos">
             <!-- We create a list that will wrap around the main todo and all the subtasks -->
             <div class="todo">
@@ -27,6 +28,7 @@
               </div>
               <button class="destroy">x</button>
             </div>
+
             <ul class="todo__subTask">
               <!-- Since its a subtask (child) of li .todo we nest it inside -->
               <li class="todos">
@@ -39,6 +41,7 @@
                   <button class="destroy">x</button>
                 </div>
               </li>
+
               <li class="todos">
                 <div class="todo">
                   <div class="todo__task">
@@ -49,10 +52,12 @@
                 </div>
               </li>
             </ul>
+
           </li>
           <!-- .todos ends -->
   
           <li class="todos">
+
             <div class="todo">
               <div class="todo__task">
                 <input type="checkbox" id="toggle" />
@@ -60,7 +65,9 @@
               </div>
               <button class="destroy">x</button>
             </div>
+
             <ul class="todo__subTask">
+
               <li class="todos">
                 <div class="todo">
                   <div class="todo__task">
@@ -70,6 +77,7 @@
                   <button class="destroy">x</button>
                 </div>
               </li>
+
               <li class="todos">
                 <div class="todo">
                   <div class="todo__task">
@@ -79,6 +87,7 @@
                   <button class="destroy">x</button>
                 </div>
               </li>
+
               <ul class="todo__subTask">
                 <!-- Just showing that this markup is verstaile and allows you easily to nest additional subtask to subtasks without needing new classe or styling -->
                 <li class="todos">
@@ -90,6 +99,7 @@
                     <button class="destroy">x</button>
                   </div>
                 </li>
+
                 <li class="todos">
                   <div class="todo">
                     <div class="todo__task">
@@ -99,8 +109,12 @@
                     <button class="destroy">x</button>
                   </div>
                 </li>
+
               </ul>
+
             </ul>
+
+
           </li>
           <!-- .todos ends -->
   
