@@ -14,13 +14,27 @@ function TodoList() {
 
 //function constructor to create todos
 function Todo(text, parent) {
-  this.id = generate();
+  this.id = generateID();
   this.parent = parent || '$root';
   this.text = text;
   this.completed = false;
   this.dateCreated = new Date();
   this.subTodo = null;
 }
+
+const generateID = function() {
+  const ALPHABET =
+    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const ID_LENGTH = 8;
+  let rtn = '';
+  for (let i = 0; i < ID_LENGTH; i++) {
+    rtn += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+    if (i === 2 || i === 5) {
+      rtn += '-';
+    }
+  }
+  return rtn;
+};
 
 Todo.prototype.edit = function(text) {
   this.text = text;
@@ -195,15 +209,106 @@ TodoList.prototype.totalTodos = function() {
   })(this.$root);
 };
 
+TodoList.prototype.displayTodos = function() {
+  console.log(`\nTodoList: ${this.totalTodos()} item(s).\n \n`);
+  let indentation = 0;
+  (function print(array) {
+    array.forEach(function(currentTodo, index) {
+      let spaces = '';
+      let completedMark = '( )';
+      for (let i = 1; i <= indentation; i++) {
+        spaces += '     ';
+      }
+      if (currentTodo.completed === true) {
+        completedMark = '(x)';
+      }
+      console.log(`${completedMark}${spaces} ${index + 1} ${currentTodo.text}`);
+      //recursive case
+      if (currentTodo.subTodo !== null) {
+        indentation++;
+        return print(currentTodo.subTodo);
+      }
+      return;
+    });
+    indentation--;
+  })(this.$root);
+};
+
 /*********************************************
  *          UNDER CONSTRUCTION *
  ********************************************/
 
-//option 1: construct each component seperately, using logic to determine type/class, appending elements to DOM sequentially
-//option 1.1: it might be good to have seperate helper functions that can create these elements
-//todo__subTask uls will need to be appendChild to the master todo containers
-//within this ul, we can repeat .todos => .todo => .todo__task => checkbox/label -> destroy button
-//option 2: construct one compound element, using position in recursion and logic to determine type/class, appending elements to DOM once
+function constructContainer() {
+  //create container div for app
+  let todoContainer = document.createElement('div');
+  todoContainer.className = 'todoContainer';
+
+  //create div to contain header elements
+  let header = document.createElement('div');
+  header.id = 'header';
+
+  let toggleAllIcon = document.createElement('i');
+  toggleAllIcon.className = 'fas fa-angle-down fa-2x toggle-all';
+  header.appendChild(toggleAllIcon);
+
+  let input = document.createElement('input');
+  input.id = 'enter';
+  input.placeholder = 'What would you like todo?';
+  header.appendChild(input);
+
+  let addTodoButton = document.createElement('button');
+  addTodoButton.id = 'add-todo';
+  addTodoButton.textContent = 'Add Todo';
+  header.appendChild(addTodoButton);
+
+  todoContainer.appendChild(header);
+  return todoContainer;
+}
+
+function constructTodoComponent(text) {
+  //create todo div to create consistent todo styling
+  let todoLI = document.createElement('li');
+  todoLI.className = 'todo';
+
+  let todoText = document.createElement('div');
+  todoText.className = 'todo-text';
+
+  //create checkbox and insert it into todo-text div
+  let toggleCheckbox = document.createElement('input');
+  toggleCheckbox.type = 'checkbox';
+  toggleCheckbox.id = 'toggle';
+  todoText.appendChild(toggleCheckbox);
+
+  //create todo text label and insert it into todo-text div
+  let todo = document.createElement('label');
+  //HACK: unknown cause of label text closer to checkbox when created through this function
+  todo.textContent = ' ' + text;
+  todoText.appendChild(todo);
+
+  //insert compound todo-text div into parent todo div
+  todoLI.appendChild(todoText);
+
+  //create destroy button and insert it into parent todo div
+  let destroyButton = document.createElement('button');
+  destroyButton.className = 'destroy';
+  destroyButton.textContent = 'x';
+  todoLI.appendChild(destroyButton);
+
+  return todoLI;
+}
+
+function constructTodoList() {
+  let todoList = document.createElement('ul');
+  todoList.className = 'todo-list';
+  return todoList;
+}
+
+function constructSubTodoList() {
+  let subTodoList = document.createElement('ul');
+  subTodoList.className = 'sub-todo-list';
+  return subTodoList;
+}
+
 
 function insertTodo(text, parent_node) {
   let newTodo = constructTodoComponent(text);
@@ -242,9 +347,10 @@ function mockDOM() {
 }
 
 TodoList.prototype.render = function() {
-
-  mockDOM();
-
+  //grab master todo list and create container div
+  let app = document.getElementById('app');
+  let todoContainer = constructContainer();
+  placeInside(todoContainer, app);
 
   //-- Basic Algorithm --
   //iterate
@@ -276,31 +382,6 @@ if (node.parentNode) {
 /*********************************************
  *          UNDER CONSTRUCTION *
  ********************************************/
-
-TodoList.prototype.displayTodos = function() {
-  console.log(`\nTodoList: ${this.totalTodos()} item(s).\n \n`);
-  let indentation = 0;
-  (function print(array) {
-    array.forEach(function(currentTodo, index) {
-      let spaces = '';
-      let completedMark = '( )';
-      for (let i = 1; i <= indentation; i++) {
-        spaces += '     ';
-      }
-      if (currentTodo.completed === true) {
-        completedMark = '(x)';
-      }
-      console.log(`${completedMark}${spaces} ${index + 1} ${currentTodo.text}`);
-      //recursive case
-      if (currentTodo.subTodo !== null) {
-        indentation++;
-        return print(currentTodo.subTodo);
-      }
-      return;
-    });
-    indentation--;
-  })(this.$root);
-};
 
 //feed example data to browser console
 let $todoList = new TodoList();
