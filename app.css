@@ -2,38 +2,53 @@ body {
 		font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
 		line-height: 1.4em;
 		background: #f5f5f5;
+		color: rgb(97, 97, 97);
 	}
 
 	#app {
 		margin: 50px auto;
 		border: solid grey 3px;
 		min-height: 400px;
-		max-width: 400px;
+		max-width: 425px;
 		background: #fff;
 		box-shadow: 0 2px 4px 0 #00000033,
 		0 25px 50px 0 rgba(0, 0, 0, 0.1);
 	}
 
+	#header {
+		color: black;
+		display: flex;
+		/* I recommend reading https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+		justify-content: space-between;
+		/* This property counts all the children and spaces them accordingly, since we ony have to children .todo__task and the checkbox it will space them to the left and right edge */
+		align-items: center;
+		margin-bottom: 15px;
+	}
 
-	#toggle-all {
-		transform: translate(-7px, 0px);
+
+	.toggle-all {
+		transform: translate(-2px, 0px);
+		color: grey;
+	}
+
+	.toggle-all:hover {
+		color: black;
 	}
 
 	input {
-		min-width: 250px;
-		font-size: 14px;
-		font-weight: 100;
-		font-stretch: expanded;
+		min-width: 275px;
+		font-size: 20px;
+		font-weight: 300;
 		font-style: italic;
-		color: #e6e6e6;
+		color: #2c2c29;
 	}
 
 	#add-todo {
 		background: #3498db;
 		border-radius: 5px;
 		color: #ffffff;
-		font-size: 10px;
-		margin-left: 15px;
+		font-size: 15px;
+		/* margin-left: 15px; */
 		padding: 5px 5px;
 		text-decoration: none;
 	}
@@ -89,7 +104,6 @@ body {
 	}
 
 	.todo {
-		color: black;
 		display: flex;
 		/* I recommend reading https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
 		justify-content: space-between;
@@ -97,11 +111,8 @@ body {
 		align-items: center;
 	}
 
-	.todo__subTask {
+	.sub-todo-list {
 		padding-left: 20px;
-	}
-
-	.todo__subTask label {
 		color: grey;
 	}
 

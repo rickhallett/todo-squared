@@ -1,39 +1,72 @@
-function constructSingleTodoDOM() {
-  //create containing li that wraps around main todo and its subtasks
-  let todoWrapper = document.createElement('li');
-  todoWrapper.className = 'todos';
+function constructContainer() {
+  //create container div for app
+  let todoContainer = document.createElement('div');
+  todoContainer.className = 'todoContainer';
 
+  //create div to contain header elements
+  let header = document.createElement('div');
+  header.id = 'header';
+
+  let toggleAllIcon = document.createElement('i');
+  toggleAllIcon.className = 'fas fa-angle-down fa-2x toggle-all';
+  header.appendChild(toggleAllIcon);
+
+  let input = document.createElement('input');
+  input.id = 'enter';
+  input.placeholder = 'What would you like todo?';
+  header.appendChild(input);
+
+  let addTodoButton = document.createElement('button');
+  addTodoButton.id = 'add-todo';
+  addTodoButton.textContent = 'Add Todo';
+  header.appendChild(addTodoButton);
+
+  todoContainer.appendChild(header);
+  return todoContainer;
+}
+
+function constructTodoComponent(text) {
   //create todo div to create consistent todo styling
-  let todoDIV = document.createElement('div');
-  todoDIV.className = 'todo';
+  let todoLI = document.createElement('li');
+  todoLI.className = 'todo';
 
-  //create seperate todo__task div so that parent flexbox property has more organised control
-  let todo__taskDIV = document.createElement('div');
-  todo__taskDIV.className = 'todo__task';
+  let todoText = document.createElement('div');
+  todoText.className = 'todo-text';
 
-  //create checkbox and insert it into todo__task div
+  //create checkbox and insert it into todo-text div
   let toggleCheckbox = document.createElement('input');
   toggleCheckbox.type = 'checkbox';
   toggleCheckbox.id = 'toggle';
-  todo__taskDIV.appendChild(toggleCheckbox);
+  todoText.appendChild(toggleCheckbox);
 
-  //create todo text label and insert it into todo__task div
-  let todoText = document.createElement('label');
-  todoText.textContent = 'this todo was created by javascript!';
-  todo__taskDIV.appendChild(todoText);
+  //create todo text label and insert it into todo-text div
+  let todo = document.createElement('label');
+  //HACK: unknown cause of label text closer to checkbox when created through this function
+  todo.textContent = ' ' + text;
+  todoText.appendChild(todo);
 
-  //insert compound todo__task div into parent todo div
-  todoDIV.appendChild(todo__taskDIV);
+  //insert compound todo-text div into parent todo div
+  todoLI.appendChild(todoText);
 
   //create destroy button and insert it into parent todo div
   let destroyButton = document.createElement('button');
   destroyButton.className = 'destroy';
   destroyButton.textContent = 'x';
-  todoDIV.appendChild(destroyButton);
+  todoLI.appendChild(destroyButton);
 
-  //place compound todo div into the master todo container
-  todoWrapper.appendChild(todoDIV);
-
-  return todoWrapper;
+  return todoLI;
 }
+
+function constructTodoList() {
+  let todoList = document.createElement('ul');
+  todoList.className = 'todo-list';
+  return todoList;
+}
+
+function constructSubTodoList() {
+  let subTodoList = document.createElement('ul');
+  subTodoList.className = 'sub-todo-list';
+  return subTodoList;
+}
+
 

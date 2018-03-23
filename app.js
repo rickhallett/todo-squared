@@ -44,8 +44,12 @@ TodoList.prototype.findTodo = function(text) {
       }
     });
     return foundTodo;
-  })($todoList.$root);
+  })(this.$root);
 };
+
+function addTodo(text) {
+  todoList.push(text);
+}
 
 //function to add todos at named level
 TodoList.prototype.insertTodo = function(text, parent) {
@@ -68,9 +72,9 @@ TodoList.prototype.insertTodo = function(text, parent) {
           return insertIn(currentTodo.subTodo);
         }
       });
-    })($todoList.$root);
+    })(this.$root);
   } else {
-    $todoList.$root.push(new Todo(text));
+    this.$root.push(new Todo(text));
     return `"${text}" was inserted at $root`;
   }
 };
@@ -99,7 +103,7 @@ TodoList.prototype.deleteTodo = function(text) {
         return deleteIn(currentTodo.subTodo);
       }
     });
-  })($todoList.$root);
+  })(this.$root);
 };
 
 TodoList.prototype.toggleTodo = function(text) {
@@ -127,7 +131,7 @@ TodoList.prototype.toggleTodo = function(text) {
         return toggleIn(currentTodo.subTodo);
       }
     });
-  })($todoList.$root);
+  })(this.$root);
 };
 
 TodoList.prototype.toggleAll = function() {
@@ -143,7 +147,7 @@ TodoList.prototype.toggleAll = function() {
         return true;
       }
     });
-  })($todoList.$root);
+  })(this.$root);
 
   //use 'forEach' to set all todos to either complete or non-complete
   (function toggleAllIn(array) {
@@ -155,7 +159,7 @@ TodoList.prototype.toggleAll = function() {
         return toggleAllIn(currentTodo.subTodo);
       }
     });
-  })($todoList.$root);
+  })(this.$root);
 };
 
 TodoList.prototype.editTodo = function(text, newText) {
@@ -172,7 +176,7 @@ TodoList.prototype.editTodo = function(text, newText) {
         return editIn(currentTodo.subTodo);
       }
     });
-  })($todoList.$root);
+  })(this.$root);
 };
 
 TodoList.prototype.totalTodos = function() {
@@ -188,7 +192,7 @@ TodoList.prototype.totalTodos = function() {
       return;
     });
     return counter;
-  })($todoList.$root);
+  })(this.$root);
 };
 
 /*********************************************
@@ -200,29 +204,65 @@ TodoList.prototype.totalTodos = function() {
 //todo__subTask uls will need to be appendChild to the master todo containers
 //within this ul, we can repeat .todos => .todo => .todo__task => checkbox/label -> destroy button
 //option 2: construct one compound element, using position in recursion and logic to determine type/class, appending elements to DOM once
+
+function insertTodo(text, parent_node) {
+  let newTodo = constructTodoComponent(text);
+  parent_node.insertAdjacentElement('beforeend', newTodo);
+}
+
+function placeInside(child_node, parent_node) {
+  parent_node.insertAdjacentElement('beforeend', child_node);
+}
+
+function mockDOM() {
+  //grab master todo list and create container div
+  let app = document.getElementById('app');
+  let todoContainer = constructContainer();
+
+  let helloWorldList = constructTodoList();
+  insertTodo('Hello, from JavaScript!', helloWorldList);
+
+  let helloWorldSubList = constructSubTodoList();
+  insertTodo('Create DOM component constructors', helloWorldSubList);
+  insertTodo('Find method to nest these', helloWorldSubList);
+  insertTodo('Weave into recursive displayTodos', helloWorldSubList);
+
+  placeInside(helloWorldSubList, helloWorldList);
+
+  let recursionSubList = constructSubTodoList();
+  insertTodo('compelete construction inner API', recursionSubList);
+  insertTodo('migrate into TodoList.prototype.render', recursionSubList);
+  insertTodo('construct tests', recursionSubList);
+
+  placeInside(recursionSubList, helloWorldSubList);
+
+  placeInside(helloWorldList, todoContainer);
+
+  placeInside(todoContainer, app);
+}
+
 TodoList.prototype.render = function() {
+
+  mockDOM();
+
+
   //-- Basic Algorithm --
   //iterate
-    //print root todo
-    //check if has children
-    //recurse into children
-      //iterate
-        //print children
-        //...continue recursion
-
-  //grab master todo list
-  let todoListUL = document.getElementById('todo-list');
-  //insert one dummy todo
-  todoListUL.append(constructSingleTodoDOM());
+  //print root todo
+  //check if has children
+  //recurse into children
+  //iterate
+  //print children
+  //...continue recursion
 
   (function constructDOM(fromArray) {
     fromArray.forEach(function(currentTodo, index) {
       //base case
 
       //recursive case
-      return constructDOM
-  });
-  })($todoList.$root);
+      return;
+    });
+  })(this.$root);
 };
 
 /*
@@ -238,7 +278,7 @@ if (node.parentNode) {
  ********************************************/
 
 TodoList.prototype.displayTodos = function() {
-  console.log(`\nTodoList: ${$todoList.totalTodos()} item(s).\n \n`);
+  console.log(`\nTodoList: ${this.totalTodos()} item(s).\n \n`);
   let indentation = 0;
   (function print(array) {
     array.forEach(function(currentTodo, index) {
@@ -259,11 +299,32 @@ TodoList.prototype.displayTodos = function() {
       return;
     });
     indentation--;
-  })($todoList.$root);
+  })(this.$root);
 };
 
-
-
+//feed example data to browser console
+let $todoList = new TodoList();
+$todoList.insertTodo('Master watchandcode');
+$todoList.insertTodo('Become a Javascript ninja');
+$todoList.insertTodo('Overthrow Gordon');
+$todoList.insertTodo('Roll up him in a yoga mat', 'Overthrow Gordon');
+$todoList.insertTodo('consider reviewing some videos', 'Master watchandcode');
+$todoList.insertTodo(
+  'get a javascript developer job',
+  'Become a Javascript ninja'
+);
+$todoList.insertTodo('prototype nested todo list', 'Become a Javascript ninja');
+$todoList.insertTodo('complete BYOA', 'Become a Javascript ninja');
+$todoList.insertTodo('master vue.js', 'Become a Javascript ninja');
+$todoList.insertTodo('complete tutorial', 'master vue.js');
+$todoList.insertTodo('read documentation', 'master vue.js');
+$todoList.insertTodo('implement TodoSquared', 'master vue.js');
+$todoList.insertTodo(
+  'build a robust web app',
+  'get a javascript developer job'
+);
+$todoList.toggleTodo('prototype nested todo list');
+$todoList.toggleTodo('read documentation');
 
 console.log($todoList);
 $todoList.displayTodos();
