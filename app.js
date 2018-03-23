@@ -1,237 +1,240 @@
 /*
 Todo List:
-1. Start migration to MVC pattern
-2. Escape the console
+1. Escape the console
 */
 
 // =================================
 //        escape the console
 // =================================
 
-function TodoList() {
-  this.$root = [];
-}
-
-//function constructor to create todos
-function Todo(text, parent) {
-  this.id = generateID();
-  this.parent = parent || '$root';
-  this.text = text;
-  this.completed = false;
-  this.dateCreated = new Date();
-  this.subTodo = null;
-}
-
-const generateID = function() {
-  const ALPHABET =
-    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const ID_LENGTH = 8;
-  let rtn = '';
-  for (let i = 0; i < ID_LENGTH; i++) {
-    rtn += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
-    if (i === 2 || i === 5) {
-      rtn += '-';
+let utils = {
+  generateID: function() {
+    const ALPHABET =
+      '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const ID_LENGTH = 8;
+    let rtn = '';
+    for (let i = 0; i < ID_LENGTH; i++) {
+      rtn += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+      if (i === 2 || i === 5) {
+        rtn += '-';
+      }
     }
+    return rtn;
   }
-  return rtn;
 };
 
-Todo.prototype.edit = function(text) {
-  this.text = text;
-  this.dateModified = new Date();
-};
-
-//function to find todos by name
-//EXTRA FEATURE: store all todos with matching text, create array and return all these todos with link to parent
-TodoList.prototype.findTodo = function(text) {
-  let foundTodo;
-  return (function findIn(array) {
-    array.forEach(function(currentTodo) {
-      //base case
-      if (currentTodo.text === text) {
-        foundTodo = currentTodo;
-        return;
-      }
-      //recursive case
-      if (currentTodo.subTodo !== null) {
-        return findIn(currentTodo.subTodo);
-      }
-    });
-    return foundTodo;
-  })(this.$root);
-};
-
-function addTodo(text) {
-  todoList.push(text);
+class TodoList {
+  constructor() {
+    this.$root = [];
+  }
 }
 
-//function to add todos at named level
-TodoList.prototype.insertTodo = function(text, parent) {
-  if (parent) {
-    return (function insertIn(array) {
+class Todo {
+  constructor(text, parent) {
+    this.id = utils.generateID();
+    this.parent = parent || '$root';
+    this.text = text;
+    this.completed = false;
+    this.dateCreated = new Date();
+    this.subTodo = null;
+  }
+
+  edit(text) {
+    this.text = text;
+    this.dateModified = new Date();
+  }
+}
+
+let model = new TodoList();
+
+let view = {
+  consoleRender: todoList => {
+    console.log(`\nTodoList: ${controller.totalTodos(todoList)} item(s).\n \n`);
+    let indentation = 0;
+    (function print(array) {
+      array.forEach(function(currentTodo, index) {
+        let spaces = '';
+        let completedMark = '( )';
+        for (let i = 1; i <= indentation; i++) {
+          spaces += '     ';
+        }
+        if (currentTodo.completed === true) {
+          completedMark = '(x)';
+        }
+        console.log(
+          `${completedMark}${spaces} ${index + 1} ${currentTodo.text}`
+        );
+        //recursive case
+        if (currentTodo.subTodo !== null) {
+          indentation++;
+          return print(currentTodo.subTodo);
+        }
+        return;
+      });
+      indentation--;
+    })(todoList);
+  },
+  render: () => {}
+};
+
+let controller = {
+  editTodo: (todoList, text, newText) => {
+    return (function editIn(array) {
       array.forEach(function(currentTodo) {
         //base case
-        if (currentTodo.text === parent) {
-          //if no array, initialise array
-          if (currentTodo.subTodo === null) {
-            currentTodo.subTodo = [];
-          }
-          currentTodo.subTodo.push(new Todo(text, parent));
-          return `"${text}" was inserted at "${parent}"`;
-          //NB: does return stop for each?
+        if (currentTodo.text === text) {
+          currentTodo.edit(newText);
+          return `"${text}" was edited to "${newText}"`;
           return;
         }
         //recursive case
         if (currentTodo.subTodo !== null) {
-          return insertIn(currentTodo.subTodo);
+          return editIn(currentTodo.subTodo);
         }
       });
-    })(this.$root);
-  } else {
-    this.$root.push(new Todo(text));
-    return `"${text}" was inserted at $root`;
-  }
-};
-
-TodoList.prototype.deleteTodo = function(text) {
-  let previousTodo;
-  return (function deleteIn(array) {
-    array.forEach(function(currentTodo) {
-      //base case
-      if (currentTodo.text === text) {
-        if (previousTodo) {
-          let index = previousTodo.subTodo.indexOf(currentTodo);
-          previousTodo.subTodo.splice(index, 1);
-          //if no previous todo (ie currently at $root)
-        } else {
-          let index = array.indexOf(currentTodo);
-          array.splice(index, 1);
-          return `"${text}" was deleted`;
+    })(todoList);
+  },
+  //TO ADD: find multiple matching todo texts if exist
+  //USE CASE: controller.findTodo(model.$root, 'find this todo');
+  findTodo: (todoList, text) => {
+    let foundTodo;
+    return (function findIn(array) {
+      array.forEach(function(currentTodo) {
+        //base case
+        if (currentTodo.text === text) {
+          foundTodo = currentTodo;
+          return;
         }
-        return;
-      }
-      //recursive case
-      if (currentTodo.subTodo !== null) {
-        //store previous todo for deletion
-        previousTodo = currentTodo;
-        return deleteIn(currentTodo.subTodo);
-      }
-    });
-  })(this.$root);
-};
-
-TodoList.prototype.toggleTodo = function(text) {
-  return (function toggleIn(array) {
-    array.forEach(function(currentTodo) {
-      //base case
-      if (currentTodo.text === text) {
-        currentTodo.completed = !currentTodo.completed;
-        let shouldToggle = currentTodo.completed;
-        //toggle children recursive case
+        //recursive case
         if (currentTodo.subTodo !== null) {
-          (function toggleAllChildren(child) {
-            child.forEach(function(currentChild) {
-              currentChild.completed = shouldToggle;
-              if (currentChild.subTodo !== null) {
-                toggleAllChildren(currentChild.subTodo);
-              }
-            });
-          })(currentTodo.subTodo);
+          return findIn(currentTodo.subTodo);
         }
+      });
+      return foundTodo;
+    })(todoList);
+  },
+  //USE CASE: controller.findTodo(model.$root, 'find this todo');
+  insertTodo: (todoList, text, parent) => {
+    if (parent) {
+      return (function insertIn(array) {
+        array.forEach(function(currentTodo) {
+          //base case
+          if (currentTodo.text === parent) {
+            //if no array, initialise array
+            if (currentTodo.subTodo === null) {
+              currentTodo.subTodo = [];
+            }
+            currentTodo.subTodo.push(new Todo(text, parent));
+            return `"${text}" was inserted at "${parent}"`;
+            //NB: does return stop for each?
+            return;
+          }
+          //recursive case
+          if (currentTodo.subTodo !== null) {
+            return insertIn(currentTodo.subTodo);
+          }
+        });
+      })(todoList);
+    } else {
+      todoList.push(new Todo(text));
+      return `"${text}" was inserted at $root`;
+    }
+  },
+  deleteTodo: (todoList, text) => {
+    let previousTodo;
+    return (function deleteIn(array) {
+      array.forEach(function(currentTodo) {
+        //base case
+        if (currentTodo.text === text) {
+          if (previousTodo) {
+            let index = previousTodo.subTodo.indexOf(currentTodo);
+            previousTodo.subTodo.splice(index, 1);
+            //if no previous todo (ie currently at $root)
+          } else {
+            let index = array.indexOf(currentTodo);
+            array.splice(index, 1);
+            return `"${text}" was deleted`;
+          }
+          return;
+        }
+        //recursive case
+        if (currentTodo.subTodo !== null) {
+          //store previous todo for deletion
+          previousTodo = currentTodo;
+          return deleteIn(currentTodo.subTodo);
+        }
+      });
+    })(todoList);
+  },
+  toggleTodo: (todoList, text) => {
+    return (function toggleIn(array) {
+      array.forEach(function(currentTodo) {
+        //base case
+        if (currentTodo.text === text) {
+          currentTodo.completed = !currentTodo.completed;
+          let shouldToggle = currentTodo.completed;
+          //toggle children recursive case
+          if (currentTodo.subTodo !== null) {
+            (function toggleAllChildren(child) {
+              child.forEach(function(currentChild) {
+                currentChild.completed = shouldToggle;
+                if (currentChild.subTodo !== null) {
+                  toggleAllChildren(currentChild.subTodo);
+                }
+              });
+            })(currentTodo.subTodo);
+          }
+          return;
+        }
+        //single nested recursive case
+        if (currentTodo.subTodo !== null) {
+          return toggleIn(currentTodo.subTodo);
+        }
+      });
+    })(todoList);
+  },
+  toggleAll: todoList => {
+    //use 'every' to determine if all todos are toggled
+    let areAllToggled = (function findIncompleteTodo(array) {
+      return array.every(function(currentTodo) {
+        //base case
+        //if even one of the todos is not complete, set areAllToggled to false
+        if (currentTodo.completed === false) return false;
+        //recursive case
+        if (currentTodo.subTodo !== null) {
+          findIncompleteTodo(currentTodo.subTodo);
+          return true;
+        }
+      });
+    })(todoList);
+
+    //use 'forEach' to set all todos to either complete or non-complete
+    (function toggleAllIn(array) {
+      array.forEach(function(currentTodo) {
+        //base case
+        currentTodo.completed = !areAllToggled;
+        //recursive case
+        if (currentTodo.subTodo !== null) {
+          return toggleAllIn(currentTodo.subTodo);
+        }
+      });
+    })(todoList);
+  },
+  totalTodos: todoList => {
+    let counter = 0;
+    return (function countIn(array) {
+      array.forEach(function(currentTodo) {
+        counter++;
+        //recursive case
+        if (currentTodo.subTodo !== null) {
+          return countIn(currentTodo.subTodo);
+        }
+        //base case
         return;
-      }
-      //single nested recursive case
-      if (currentTodo.subTodo !== null) {
-        return toggleIn(currentTodo.subTodo);
-      }
-    });
-  })(this.$root);
-};
-
-TodoList.prototype.toggleAll = function() {
-  //use 'every' to determine if all todos are toggled
-  let areAllToggled = (function findIncompleteTodo(array) {
-    return array.every(function(currentTodo) {
-      //base case
-      //if even one of the todos is not complete, set areAllToggled to false
-      if (currentTodo.completed === false) return false;
-      //recursive case
-      if (currentTodo.subTodo !== null) {
-        findIncompleteTodo(currentTodo.subTodo);
-        return true;
-      }
-    });
-  })(this.$root);
-
-  //use 'forEach' to set all todos to either complete or non-complete
-  (function toggleAllIn(array) {
-    array.forEach(function(currentTodo) {
-      //base case
-      currentTodo.completed = !areAllToggled;
-      //recursive case
-      if (currentTodo.subTodo !== null) {
-        return toggleAllIn(currentTodo.subTodo);
-      }
-    });
-  })(this.$root);
-};
-
-TodoList.prototype.editTodo = function(text, newText) {
-  return (function editIn(array) {
-    array.forEach(function(currentTodo) {
-      //base case
-      if (currentTodo.text === text) {
-        currentTodo.edit(newText);
-        return `"${text}" was edited to "${newText}"`;
-        return;
-      }
-      //recursive case
-      if (currentTodo.subTodo !== null) {
-        return editIn(currentTodo.subTodo);
-      }
-    });
-  })(this.$root);
-};
-
-TodoList.prototype.totalTodos = function() {
-  let counter = 0;
-  return (function countIn(array) {
-    array.forEach(function(currentTodo) {
-      counter++;
-      //recursive case
-      if (currentTodo.subTodo !== null) {
-        return countIn(currentTodo.subTodo);
-      }
-      //base case
-      return;
-    });
-    return counter;
-  })(this.$root);
-};
-
-TodoList.prototype.displayTodos = function() {
-  console.log(`\nTodoList: ${this.totalTodos()} item(s).\n \n`);
-  let indentation = 0;
-  (function print(array) {
-    array.forEach(function(currentTodo, index) {
-      let spaces = '';
-      let completedMark = '( )';
-      for (let i = 1; i <= indentation; i++) {
-        spaces += '     ';
-      }
-      if (currentTodo.completed === true) {
-        completedMark = '(x)';
-      }
-      console.log(`${completedMark}${spaces} ${index + 1} ${currentTodo.text}`);
-      //recursive case
-      if (currentTodo.subTodo !== null) {
-        indentation++;
-        return print(currentTodo.subTodo);
-      }
-      return;
-    });
-    indentation--;
-  })(this.$root);
+      });
+      return counter;
+    })(todoList);
+  }
 };
 
 /*********************************************
@@ -281,7 +284,7 @@ function constructTodoComponent(text) {
 
   //create todo text label and insert it into todo-text div
   let todo = document.createElement('label');
-  //HACK: unknown cause of label text closer to checkbox when created through this function
+  //HACK: unknown cause of label text closer to checkbox when created through model function
   todo.textContent = ' ' + text;
   todoText.appendChild(todo);
 
@@ -308,7 +311,6 @@ function constructSubTodoList() {
   subTodoList.className = 'sub-todo-list';
   return subTodoList;
 }
-
 
 function insertTodo(text, parent_node) {
   let newTodo = constructTodoComponent(text);
@@ -368,7 +370,7 @@ TodoList.prototype.render = function() {
       //recursive case
       return;
     });
-  })(this.$root);
+  })(model.$root);
 };
 
 /*
@@ -384,30 +386,51 @@ if (node.parentNode) {
  ********************************************/
 
 //feed example data to browser console
-let $todoList = new TodoList();
-$todoList.insertTodo('Master watchandcode');
-$todoList.insertTodo('Become a Javascript ninja');
-$todoList.insertTodo('Overthrow Gordon');
-$todoList.insertTodo('Roll up him in a yoga mat', 'Overthrow Gordon');
-$todoList.insertTodo('consider reviewing some videos', 'Master watchandcode');
-$todoList.insertTodo(
+controller.insertTodo(model.$root, 'Master watchandcode');
+controller.insertTodo(model.$root, 'Become a Javascript ninja');
+controller.insertTodo(model.$root, 'Overthrow Gordon');
+controller.insertTodo(
+  model.$root,
+  'Roll up him in a yoga mat',
+  'Overthrow Gordon'
+);
+controller.insertTodo(
+  model.$root,
+  'consider reviewing some videos',
+  'Master watchandcode'
+);
+controller.insertTodo(
+  model.$root,
   'get a javascript developer job',
   'Become a Javascript ninja'
 );
-$todoList.insertTodo('prototype nested todo list', 'Become a Javascript ninja');
-$todoList.insertTodo('complete BYOA', 'Become a Javascript ninja');
-$todoList.insertTodo('master vue.js', 'Become a Javascript ninja');
-$todoList.insertTodo('complete tutorial', 'master vue.js');
-$todoList.insertTodo('read documentation', 'master vue.js');
-$todoList.insertTodo('implement TodoSquared', 'master vue.js');
-$todoList.insertTodo(
+controller.insertTodo(
+  model.$root,
+  'prototype nested todo list',
+  'Become a Javascript ninja'
+);
+controller.insertTodo(
+  model.$root,
+  'complete BYOA',
+  'Become a Javascript ninja'
+);
+controller.insertTodo(
+  model.$root,
+  'master vue.js',
+  'Become a Javascript ninja'
+);
+controller.insertTodo(model.$root, 'complete tutorial', 'master vue.js');
+controller.insertTodo(model.$root, 'read documentation', 'master vue.js');
+controller.insertTodo(model.$root, 'implement TodoSquared', 'master vue.js');
+controller.insertTodo(
+  model.$root,
   'build a robust web app',
   'get a javascript developer job'
 );
-$todoList.toggleTodo('prototype nested todo list');
-$todoList.toggleTodo('read documentation');
+controller.toggleTodo(model.$root, 'prototype nested todo list');
+controller.toggleTodo(model.$root, 'read documentation');
 
-console.log($todoList);
-$todoList.displayTodos();
+console.log(model.$root);
+view.consoleRender(model.$root);
 
-$todoList.render();
+view.render(model.$root);
