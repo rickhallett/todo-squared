@@ -18,9 +18,7 @@ body {
 	#header {
 		color: black;
 		display: flex;
-		/* I recommend reading https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
 		justify-content: space-between;
-		/* This property counts all the children and spaces them accordingly, since we ony have to children .todo__task and the checkbox it will space them to the left and right edge */
 		align-items: center;
 		margin-bottom: 15px;
 	}
@@ -77,10 +75,6 @@ body {
 		cursor: pointer;
 	}
 
-	/*************
-	 Mikael CSS 
-	 ************/
-
 	.todoContainer {
 		padding: 20px;
 	}
@@ -105,9 +99,9 @@ body {
 
 	.todo {
 		display: flex;
-		/* I recommend reading https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+		/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
 		justify-content: space-between;
-		/* This property counts all the children and spaces them accordingly, since we ony have to children .todo__task and the checkbox it will space them to the left and right edge */
+		/* This property counts all the children and spaces them accordingly */
 		align-items: center;
 	}
 

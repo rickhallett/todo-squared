@@ -8,7 +8,7 @@ Todo List:
 // =================================
 
 let utils = {
-  generateID: function() {
+  generateID: function () {
     const ALPHABET =
       '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const ID_LENGTH = 8;
@@ -52,7 +52,7 @@ let view = {
     console.log(`\nTodoList: ${controller.totalTodos(todoList)} item(s).\n \n`);
     let indentation = 0;
     (function print(array) {
-      array.forEach(function(currentTodo, index) {
+      array.forEach(function (currentTodo, index) {
         let spaces = '';
         let completedMark = '( )';
         for (let i = 1; i <= indentation; i++) {
@@ -74,13 +74,13 @@ let view = {
       indentation--;
     })(todoList);
   },
-  render: () => {}
+  render: () => { }
 };
 
 let controller = {
   editTodo: (todoList, text, newText) => {
     return (function editIn(array) {
-      array.forEach(function(currentTodo) {
+      array.forEach(function (currentTodo) {
         //base case
         if (currentTodo.text === text) {
           currentTodo.edit(newText);
@@ -99,7 +99,7 @@ let controller = {
   findTodo: (todoList, text) => {
     let foundTodo;
     return (function findIn(array) {
-      array.forEach(function(currentTodo) {
+      array.forEach(function (currentTodo) {
         //base case
         if (currentTodo.text === text) {
           foundTodo = currentTodo;
@@ -117,7 +117,7 @@ let controller = {
   insertTodo: (todoList, text, parent) => {
     if (parent) {
       return (function insertIn(array) {
-        array.forEach(function(currentTodo) {
+        array.forEach(function (currentTodo) {
           //base case
           if (currentTodo.text === parent) {
             //if no array, initialise array
@@ -143,7 +143,7 @@ let controller = {
   deleteTodo: (todoList, text) => {
     let previousTodo;
     return (function deleteIn(array) {
-      array.forEach(function(currentTodo) {
+      array.forEach(function (currentTodo) {
         //base case
         if (currentTodo.text === text) {
           if (previousTodo) {
@@ -168,7 +168,7 @@ let controller = {
   },
   toggleTodo: (todoList, text) => {
     return (function toggleIn(array) {
-      array.forEach(function(currentTodo) {
+      array.forEach(function (currentTodo) {
         //base case
         if (currentTodo.text === text) {
           currentTodo.completed = !currentTodo.completed;
@@ -176,7 +176,7 @@ let controller = {
           //toggle children recursive case
           if (currentTodo.subTodo !== null) {
             (function toggleAllChildren(child) {
-              child.forEach(function(currentChild) {
+              child.forEach(function (currentChild) {
                 currentChild.completed = shouldToggle;
                 if (currentChild.subTodo !== null) {
                   toggleAllChildren(currentChild.subTodo);
@@ -196,7 +196,7 @@ let controller = {
   toggleAll: todoList => {
     //use 'every' to determine if all todos are toggled
     let areAllToggled = (function findIncompleteTodo(array) {
-      return array.every(function(currentTodo) {
+      return array.every(function (currentTodo) {
         //base case
         //if even one of the todos is not complete, set areAllToggled to false
         if (currentTodo.completed === false) return false;
@@ -210,7 +210,7 @@ let controller = {
 
     //use 'forEach' to set all todos to either complete or non-complete
     (function toggleAllIn(array) {
-      array.forEach(function(currentTodo) {
+      array.forEach(function (currentTodo) {
         //base case
         currentTodo.completed = !areAllToggled;
         //recursive case
@@ -223,7 +223,7 @@ let controller = {
   totalTodos: todoList => {
     let counter = 0;
     return (function countIn(array) {
-      array.forEach(function(currentTodo) {
+      array.forEach(function (currentTodo) {
         counter++;
         //recursive case
         if (currentTodo.subTodo !== null) {
@@ -348,11 +348,12 @@ function mockDOM() {
   placeInside(todoContainer, app);
 }
 
-TodoList.prototype.render = function() {
+let render = function () {
   //grab master todo list and create container div
   let app = document.getElementById('app');
+
   let todoContainer = constructContainer();
-  placeInside(todoContainer, app);
+  let listToRender = constructTodoList();
 
   //-- Basic Algorithm --
   //iterate
@@ -363,14 +364,27 @@ TodoList.prototype.render = function() {
   //print children
   //...continue recursion
 
-  (function constructDOM(fromArray) {
-    fromArray.forEach(function(currentTodo, index) {
-      //base case
+  //issue:  become a javascript ninja is placed inside first sub-todo-list, not the root todo-list
 
+  (function constructDOM(fromArray, subTodoContainer) {
+    fromArray.forEach(function (currentTodo, index) {
+      //base case
+      // debugger;
+      if(currentTodo.parent === '$root')
+      insertTodo(currentTodo.text, (listToRender.lastChild !== null ? listToRender.lastChild : listToRender));
       //recursive case
-      return;
+      if (currentTodo.subTodo !== null) {
+          let newSubContainer = constructSubTodoList();
+          // debugger;
+          placeInside(newSubContainer, listToRender);
+        return constructDOM(currentTodo.subTodo);
+      }
     });
   })(model.$root);
+
+  console.log(app);
+  placeInside(listToRender, todoContainer);
+  placeInside(todoContainer, app);
 };
 
 /*
@@ -433,4 +447,4 @@ controller.toggleTodo(model.$root, 'read documentation');
 console.log(model.$root);
 view.consoleRender(model.$root);
 
-view.render(model.$root);
+render(model.$root);
