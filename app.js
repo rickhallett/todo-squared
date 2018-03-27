@@ -45,6 +45,8 @@ class Todo {
   }
 }
 
+let inDevelopment = {};
+
 let model = new TodoList();
 
 let view = {
@@ -348,12 +350,12 @@ function mockDOM() {
   placeInside(todoContainer, app);
 }
 
-let render = function () {
+inDevelopment.render = function () {
   //grab master todo list and create container div
   let app = document.getElementById('app');
 
   let todoContainer = constructContainer();
-  let listToRender = constructTodoList();
+  let virtualDOM = constructTodoList();
 
   //-- Basic Algorithm --
   //iterate
@@ -364,26 +366,45 @@ let render = function () {
   //print children
   //...continue recursion
 
-  //issue:  become a javascript ninja is placed inside first sub-todo-list, not the root todo-list
+  //issue:  become a javascript ninja (secont root level todo) is placed inside first sub-todo-list, not the root todo-list
+  //issue: there needs to be a way of correlating currentTodo.parent (model) with virtualDOM position
+    //can we use the children array to determine depth?
 
   (function constructDOM(fromArray, subTodoContainer) {
     fromArray.forEach(function (currentTodo, index) {
       //base case
-      // debugger;
-      if(currentTodo.parent === '$root')
-      insertTodo(currentTodo.text, (listToRender.lastChild !== null ? listToRender.lastChild : listToRender));
+      
+      function calculateDepth() {
+        //prevent error when no lastChild on first iteration of constructDOM
+        if (virtualDOM.lastChild === null && virtualDOM.children.length === 0) {
+          //??
+          return virtualDOM;
+        }
+        if (virtualDOM.lastChild !== null && currentTodo.parent === '$root') {
+          //reset location to top level
+          return virtualDOM;
+        }
+        if(virtualDOM.lastChild !== null && virtualDOM.children.length > 0) {
+          return virtualDOM.lastChild
+        }
+        
+      }
+
+      let atThisLocation = calculateDepth();
+      insertTodo(currentTodo.text, atThisLocation);
+
       //recursive case
       if (currentTodo.subTodo !== null) {
-          let newSubContainer = constructSubTodoList();
-          // debugger;
-          placeInside(newSubContainer, listToRender);
+        //create new sub-todo-list container and place inside the virtualDOM
+        let newSubContainer = constructSubTodoList();
+        placeInside(newSubContainer, virtualDOM);
         return constructDOM(currentTodo.subTodo);
       }
     });
   })(model.$root);
 
   console.log(app);
-  placeInside(listToRender, todoContainer);
+  placeInside(virtualDOM, todoContainer);
   placeInside(todoContainer, app);
 };
 
@@ -446,5 +467,4 @@ controller.toggleTodo(model.$root, 'read documentation');
 
 console.log(model.$root);
 view.consoleRender(model.$root);
-
-render(model.$root);
+inDevelopment.render(model.$root);
