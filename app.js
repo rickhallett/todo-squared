@@ -357,36 +357,58 @@ inDevelopment.render = function () {
   let todoContainer = constructContainer();
   let virtualDOM = constructTodoList();
 
-  //-- Basic Algorithm --
-  //iterate
-  //print root todo
-  //check if has children
-  //recurse into children
-  //iterate
-  //print children
-  //...continue recursion
+  //issue:'Root 1 - Sub 2' needs to escape its parent sub-todo-list, and be placed in the parent of this list
+    //ideally, this needs to be dynamic,  - can we calculate number of parents recursively? Do we even need to?
 
-  //issue:  become a javascript ninja (secont root level todo) is placed inside first sub-todo-list, not the root todo-list
-  //issue: there needs to be a way of correlating currentTodo.parent (model) with virtualDOM position
-    //can we use the children array to determine depth?
+  function findNode(nodeList) {
+      array.forEach(function (currentTodo) {
+        //base case
+        if (currentTodo.text === text) {
+          foundTodo = currentTodo;
+          return;
+        }
+        //recursive case
+        if (currentTodo.subTodo !== null) {
+          return findIn(currentTodo.subTodo);
+        }
+      });
+      return foundTodo;
+    };
 
   (function constructDOM(fromArray, subTodoContainer) {
+    // let previousElement;
+
     fromArray.forEach(function (currentTodo, index) {
       //base case
-      
       function calculateDepth() {
-        //prevent error when no lastChild on first iteration of constructDOM
-        if (virtualDOM.lastChild === null && virtualDOM.children.length === 0) {
+        //if virtualDOM is populated, work out its current length of children NodeList
+        let lastChildElement = virtualDOM.lastChild;
+        let lengthOfChildren;
+        if(lastChildElement){
+          lengthOfChildren = lastChildElement.children.length
+        }
+
+        //prevent error when no lastChild on first iteration of constructDOM, setting position to top level
+        if (lastChildElement === null && virtualDOM.children.length === 0) {
           //??
           return virtualDOM;
         }
-        if (virtualDOM.lastChild !== null && currentTodo.parent === '$root') {
+
+        //ensure that elements with the parent of $root set position to top level
+        if (lastChildElement !== null && currentTodo.parent === '$root') {
           //reset location to top level
           return virtualDOM;
         }
-        if(virtualDOM.lastChild !== null && virtualDOM.children.length > 0) {
-          return virtualDOM.lastChild
+
+        //in all other cases
+        let positionToInsert = 0;
+        if(lengthOfChildren) {
+          positionToInsert = lengthOfChildren - 1;
+          return lastChildElement.children[positionToInsert];
+        } else {
+          return lastChildElement;
         }
+
         
       }
 
@@ -395,10 +417,21 @@ inDevelopment.render = function () {
 
       //recursive case
       if (currentTodo.subTodo !== null) {
-        //create new sub-todo-list container and place inside the virtualDOM
-        let newSubContainer = constructSubTodoList();
-        placeInside(newSubContainer, virtualDOM);
+
+        if(currentTodo.parent === '$root') {
+          let newSubContainer = constructSubTodoList();
+          placeInside(newSubContainer, virtualDOM);
+        } else {
+          let newSubContainer = constructSubTodoList();
+          placeInside(newSubContainer, virtualDOM.lastChild);
+        }
+
         return constructDOM(currentTodo.subTodo);
+
+        //create new sub-todo-list container and place inside the virtualDOM
+        // let newSubContainer = constructSubTodoList();
+        // placeInside(newSubContainer, virtualDOM);
+        // return constructDOM(currentTodo.subTodo);
       }
     });
   })(model.$root);
@@ -421,49 +454,56 @@ if (node.parentNode) {
  ********************************************/
 
 //feed example data to browser console
-controller.insertTodo(model.$root, 'Master watchandcode');
-controller.insertTodo(model.$root, 'Become a Javascript ninja');
-controller.insertTodo(model.$root, 'Overthrow Gordon');
-controller.insertTodo(
-  model.$root,
-  'Roll up him in a yoga mat',
-  'Overthrow Gordon'
-);
-controller.insertTodo(
-  model.$root,
-  'consider reviewing some videos',
-  'Master watchandcode'
-);
-controller.insertTodo(
-  model.$root,
-  'get a javascript developer job',
-  'Become a Javascript ninja'
-);
-controller.insertTodo(
-  model.$root,
-  'prototype nested todo list',
-  'Become a Javascript ninja'
-);
-controller.insertTodo(
-  model.$root,
-  'complete BYOA',
-  'Become a Javascript ninja'
-);
-controller.insertTodo(
-  model.$root,
-  'master vue.js',
-  'Become a Javascript ninja'
-);
-controller.insertTodo(model.$root, 'complete tutorial', 'master vue.js');
-controller.insertTodo(model.$root, 'read documentation', 'master vue.js');
-controller.insertTodo(model.$root, 'implement TodoSquared', 'master vue.js');
-controller.insertTodo(
-  model.$root,
-  'build a robust web app',
-  'get a javascript developer job'
-);
-controller.toggleTodo(model.$root, 'prototype nested todo list');
-controller.toggleTodo(model.$root, 'read documentation');
+// controller.insertTodo(model.$root, 'Master watchandcode');
+// controller.insertTodo(model.$root, 'Become a Javascript ninja');
+// controller.insertTodo(model.$root, 'Overthrow Gordon');
+// controller.insertTodo(
+//   model.$root,
+//   'Roll up him in a yoga mat',
+//   'Overthrow Gordon'
+// );
+// controller.insertTodo(
+//   model.$root,
+//   'consider reviewing some videos',
+//   'Master watchandcode'
+// );
+// controller.insertTodo(
+//   model.$root,
+//   'get a javascript developer job',
+//   'Become a Javascript ninja'
+// );
+// controller.insertTodo(
+//   model.$root,
+//   'prototype nested todo list',
+//   'Become a Javascript ninja'
+// );
+// controller.insertTodo(
+//   model.$root,
+//   'complete BYOA',
+//   'Become a Javascript ninja'
+// );
+// controller.insertTodo(
+//   model.$root,
+//   'master vue.js',
+//   'Become a Javascript ninja'
+// );
+// controller.insertTodo(model.$root, 'complete tutorial', 'master vue.js');
+// controller.insertTodo(model.$root, 'read documentation', 'master vue.js');
+// controller.insertTodo(model.$root, 'implement TodoSquared', 'master vue.js');
+// controller.insertTodo(
+//   model.$root,
+//   'build a robust web app',
+//   'get a javascript developer job'
+// );
+// controller.toggleTodo(model.$root, 'prototype nested todo list');
+// controller.toggleTodo(model.$root, 'read documentation');
+
+controller.insertTodo(model.$root, 'Root 1');
+controller.insertTodo(model.$root, 'Root 2');
+controller.insertTodo(model.$root, 'Root 3');
+controller.insertTodo(model.$root, 'Root 1 - Sub 1', 'Root 1');
+controller.insertTodo(model.$root, 'Sub 1 - Sub 1', 'Root 1 - Sub 1');
+controller.insertTodo(model.$root, 'Root 1 - Sub 2', 'Root 1');
 
 console.log(model.$root);
 view.consoleRender(model.$root);
