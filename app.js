@@ -348,6 +348,12 @@ inDevelopment.render = function () {
 
     fromArray.forEach(function (currentTodo) {
       let v = virtualDOM;
+
+      //check for root depth to over-ride step by step depth finding
+      if (currentTodo.parent === '$root') {
+        currentContainer = virtualDOM;
+      }
+      
       insertTodo(currentTodo.text, currentTodo.parent, currentContainer);
 
       if (currentTodo.subTodo === null) {
@@ -356,12 +362,17 @@ inDevelopment.render = function () {
         //use if to prevent moving up level at $root node
         if(currentContainer.parentNode !== null) {
           //if SOMETHING, don't move pointer up
+
+          //step-by-step depth finding
           if(previousTodo.parent === currentTodo.parent) {
+            currentContainer = currentContainer;
+          } else if (previousTodo.text === currentTodo.parent) { 
             currentContainer = currentContainer;
           } else {
             currentContainer = currentContainer.parentNode;
           }
         }
+
       } else {
         //recursive case
         let newSubContainer = constructSubTodoList();
@@ -374,6 +385,7 @@ inDevelopment.render = function () {
       }
 
     });
+    
   })(model.$root);
 
   console.log(app);
