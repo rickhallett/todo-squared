@@ -49,36 +49,6 @@ let inDevelopment = {};
 
 let model = new TodoList();
 
-let view = {
-  consoleRender: todoList => {
-    console.log(`\nTodoList: ${controller.totalTodos(todoList)} item(s).\n \n`);
-    let indentation = 0;
-    (function print(array) {
-      array.forEach(function (currentTodo, index) {
-        let spaces = '';
-        let completedMark = '( )';
-        for (let i = 1; i <= indentation; i++) {
-          spaces += '     ';
-        }
-        if (currentTodo.completed === true) {
-          completedMark = '(x)';
-        }
-        console.log(
-          `${completedMark}${spaces} ${index + 1} ${currentTodo.text}`
-        );
-        //recursive case
-        if (currentTodo.subTodo !== null) {
-          indentation++;
-          return print(currentTodo.subTodo);
-        }
-        return;
-      });
-      indentation--;
-    })(todoList);
-  },
-  render: () => { }
-};
-
 let controller = {
   editTodo: (todoList, text, newText) => {
     return (function editIn(array) {
@@ -239,152 +209,170 @@ let controller = {
   }
 };
 
-function constructContainer() {
-  //create container div for app
-  let todoContainer = document.createElement('div');
-  todoContainer.className = 'todoContainer';
+let view = {
+  consoleRender: todoList => {
+    console.log(`\nTodoList: ${controller.totalTodos(todoList)} item(s).\n \n`);
+    let indentation = 0;
+    (function print(array) {
+      array.forEach(function (currentTodo, index) {
+        let spaces = '';
+        let completedMark = '( )';
+        for (let i = 1; i <= indentation; i++) {
+          spaces += '     ';
+        }
+        if (currentTodo.completed === true) {
+          completedMark = '(x)';
+        }
+        console.log(
+          `${completedMark}${spaces} ${index + 1} ${currentTodo.text}`
+        );
+        //recursive case
+        if (currentTodo.subTodo !== null) {
+          indentation++;
+          return print(currentTodo.subTodo);
+        }
+        return;
+      });
+      indentation--;
+    })(todoList);
+  },
+  render: () => {
+    //grab master todo list and create container div
+    let app = document.getElementById('app');
+    let todoContainer = view.constructContainer();
 
-  //create div to contain header elements
-  let header = document.createElement('div');
-  header.id = 'header';
+    //allocate memory for construction of HTML
+    let virtualDOM = view.constructTodoList();
 
-  let toggleAllIcon = document.createElement('i');
-  toggleAllIcon.className = 'fas fa-angle-down fa-2x toggle-all';
-  header.appendChild(toggleAllIcon);
+    //copy virtualDOM to hold position in recursion (for readability)
+    let currentContainer = virtualDOM;
+    let previousTodo;
 
-  let input = document.createElement('input');
-  input.id = 'enter';
-  input.placeholder = 'What would you like todo?';
-  header.appendChild(input);
+    (function constructDOM(fromArray, subTodoContainer) {
+      fromArray.forEach(function (currentTodo) {
+        let v = virtualDOM;
 
-  let addTodoButton = document.createElement('button');
-  addTodoButton.id = 'add-todo';
-  addTodoButton.textContent = 'Add Todo';
-  header.appendChild(addTodoButton);
-
-  todoContainer.appendChild(header);
-  return todoContainer;
-}
-
-function constructTodoComponent(text, id) {
-  //create todo div to create consistent todo styling
-  let todoLI = document.createElement('li');
-  todoLI.className = 'todo';
-  todoLI.dataset.id = id;
-
-  let todoText = document.createElement('div');
-  todoText.className = 'todo-text';
-
-  //create checkbox and insert it into todo-text div
-  let toggleCheckbox = document.createElement('input');
-  toggleCheckbox.type = 'checkbox';
-  toggleCheckbox.id = 'toggle';
-  todoText.appendChild(toggleCheckbox);
-
-  //create todo text label and insert it into todo-text div
-  let todo = document.createElement('label');
-  //HACK: unknown cause of label text closer to checkbox when created through model function
-  todo.textContent = ' ' + text;
-  todoText.appendChild(todo);
-
-  //insert compound todo-text div into parent todo div
-  todoLI.appendChild(todoText);
-
-  //create destroy button and insert it into parent todo div
-  let destroyButton = document.createElement('button');
-  destroyButton.className = 'destroy';
-  destroyButton.textContent = 'x';
-  todoLI.appendChild(destroyButton);
-
-  return todoLI;
-}
-
-function constructTodoList() {
-  let todoList = document.createElement('ul');
-  todoList.className = 'todo-list';
-  return todoList;
-}
-
-function constructSubTodoList() {
-  let subTodoList = document.createElement('ul');
-  subTodoList.className = 'sub-todo-list';
-  return subTodoList;
-}
-
-function insertTodo(text, id, parent_node) {
-  let newTodo = constructTodoComponent(text, id);
-  parent_node.insertAdjacentElement('beforeend', newTodo);
-}
-
-function placeInside(child_node, parent_node) {
-  parent_node.insertAdjacentElement('beforeend', child_node);
-}
-
-function placeNextTo(child_node, parent_node) {
-  parent_node.insertAdjacentElement('afterend', child_node);
-}
-
-inDevelopment.render = function () {
-  //grab master todo list and create container div
-  let app = document.getElementById('app');
-  let todoContainer = constructContainer();
-
-  //allocate memory for construction of HTML
-  let virtualDOM = constructTodoList();
-
-  //copy virtualDOM to hold position in recursion (for readability)
-  let currentContainer = virtualDOM;
-  let previousTodo;
-
-  (function constructDOM(fromArray, subTodoContainer) {
-    fromArray.forEach(function (currentTodo) {
-      let v = virtualDOM;
-
-      //check for root depth to over-ride step by step depth finding
-      if (currentTodo.parent === '$root') {
-        currentContainer = virtualDOM;
-      }
-
-      insertTodo(currentTodo.text, currentTodo.id, currentContainer);
-
-      //base case
-      if (currentTodo.subTodo === null) {
-        //move container pointer up one level to accommodate further todos at this depth
-        //use if to prevent moving up level at $root node
-        if(currentContainer.parentNode !== null) {
-          //if SOMETHING, don't move pointer up
-
-          //step-by-step depth finding
-          if(previousTodo.parent === currentTodo.parent) {
-            currentContainer = currentContainer;
-          } else if (previousTodo.text === currentTodo.parent) { 
-            currentContainer = currentContainer;
-          } else {
-            currentContainer = currentContainer.parentNode;
-          }
+        //check for root depth to over-ride step by step depth finding
+        if (currentTodo.parent === '$root') {
+          currentContainer = virtualDOM;
         }
 
-      //recursive case
-      } else {
-        
-        let newSubContainer = constructSubTodoList();
-        placeInside(newSubContainer, currentContainer);
+        view.insertTodo(currentTodo.text, currentTodo.id, currentContainer);
 
-        //move container pointer down one level to accommodate recursion
-        currentContainer = currentContainer.lastChild;
+        //base case
+        if (currentTodo.subTodo === null) {
+          //move container pointer up one level to accommodate further todos at this depth
+          //use if to prevent moving up level at $root node
+          if (currentContainer.parentNode !== null) {
+            //if SOMETHING, don't move pointer up
 
-        //store pointer to this todo and traverse into subTodos
-        previousTodo = currentTodo;
-        return constructDOM(currentTodo.subTodo);
-      }
+            //step-by-step depth finding
+            if (previousTodo.parent === currentTodo.parent) {
+              currentContainer = currentContainer;
+            } else if (previousTodo.text === currentTodo.parent) {
+              currentContainer = currentContainer;
+            } else {
+              currentContainer = currentContainer.parentNode;
+            }
+          }
 
-    });
-    
-  })(model.$root);
+          //recursive case
+        } else {
 
-  console.log(app);
-  placeInside(virtualDOM, todoContainer);
-  placeInside(todoContainer, app);
+          let newSubContainer = view.constructSubTodoList();
+          view.placeInside(newSubContainer, currentContainer);
+
+          //move container pointer down one level to accommodate recursion
+          currentContainer = currentContainer.lastChild;
+
+          //store pointer to this todo and traverse into subTodos
+          previousTodo = currentTodo;
+          return constructDOM(currentTodo.subTodo);
+        }
+
+      });
+
+    })(model.$root);
+
+    console.log(app);
+    view.placeInside(virtualDOM, todoContainer);
+    view.placeInside(todoContainer, app);
+  },
+  constructContainer: () => {
+    //create container div for app
+    let todoContainer = document.createElement('div');
+    todoContainer.className = 'todoContainer';
+
+    //create div to contain header elements
+    let header = document.createElement('div');
+    header.id = 'header';
+
+    let toggleAllIcon = document.createElement('i');
+    toggleAllIcon.className = 'fas fa-angle-down fa-2x toggle-all';
+    header.appendChild(toggleAllIcon);
+
+    let input = document.createElement('input');
+    input.id = 'enter';
+    input.placeholder = 'What would you like todo?';
+    header.appendChild(input);
+
+    let addTodoButton = document.createElement('button');
+    addTodoButton.id = 'add-todo';
+    addTodoButton.textContent = 'Add Todo';
+    header.appendChild(addTodoButton);
+
+    todoContainer.appendChild(header);
+    return todoContainer;
+  },
+  constructTodoComponent: (text, id) => {
+    //create todo div to create consistent todo styling
+    let todoLI = document.createElement('li');
+    todoLI.className = 'todo';
+    todoLI.dataset.id = id;
+
+    let todoText = document.createElement('div');
+    todoText.className = 'todo-text';
+
+    //create checkbox and insert it into todo-text div
+    let toggleCheckbox = document.createElement('input');
+    toggleCheckbox.type = 'checkbox';
+    toggleCheckbox.id = 'toggle';
+    todoText.appendChild(toggleCheckbox);
+
+    //create todo text label and insert it into todo-text div
+    let todo = document.createElement('label');
+    //HACK: unknown cause of label text closer to checkbox when created through model function
+    todo.textContent = ' ' + text;
+    todoText.appendChild(todo);
+
+    //insert compound todo-text div into parent todo div
+    todoLI.appendChild(todoText);
+
+    //create destroy button and insert it into parent todo div
+    let destroyButton = document.createElement('button');
+    destroyButton.className = 'destroy';
+    destroyButton.textContent = 'x';
+    todoLI.appendChild(destroyButton);
+
+    return todoLI;
+  },
+  constructTodoList: () => {
+    let todoList = document.createElement('ul');
+    todoList.className = 'todo-list';
+    return todoList;
+  },
+  constructSubTodoList: () => {
+    let subTodoList = document.createElement('ul');
+    subTodoList.className = 'sub-todo-list';
+    return subTodoList;
+  },
+  insertTodo: (text, id, parent_node) => {
+    let newTodo = view.constructTodoComponent(text, id);
+    parent_node.insertAdjacentElement('beforeend', newTodo);
+  },
+  placeInside: (child_node, parent_node) => {
+    parent_node.insertAdjacentElement('beforeend', child_node);
+  }
 };
 
 /*
@@ -395,7 +383,4 @@ if (node.parentNode) {
 }
 */
 
-/*********************************************
- *          UNDER CONSTRUCTION *
- ********************************************/
 

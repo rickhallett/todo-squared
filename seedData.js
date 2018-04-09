@@ -48,4 +48,4 @@ controller.toggleTodo(model.$root, 'read documentation');
 
 console.log(model.$root);
 view.consoleRender(model.$root);
-inDevelopment.render(model.$root);
+view.render(model.$root);
