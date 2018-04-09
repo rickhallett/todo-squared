@@ -2,6 +2,7 @@
 controller.insertTodo(model.$root, 'Master watchandcode');
 controller.insertTodo(model.$root, 'Become a Javascript ninja');
 controller.insertTodo(model.$root, 'Overthrow Gordon');
+controller.insertTodo(model.$root, 'Achieve enlightenment');
 controller.insertTodo(
   model.$root,
   'Roll up him in a yoga mat',
@@ -40,22 +41,10 @@ controller.insertTodo(
   'build a robust web app',
   'get a javascript developer job'
 );
+controller.insertTodo(model.$root, 'contribute to Gordons eslint plugin', 'Master watchandcode');
+controller.insertTodo(model.$root, 'get some interviews!', 'get a javascript developer job');
 controller.toggleTodo(model.$root, 'prototype nested todo list');
 controller.toggleTodo(model.$root, 'read documentation');
-
-// controller.insertTodo(model.$root, 'Hello world!');
-// controller.insertTodo(model.$root, 'Hello Javascript!');
-// controller.insertTodo(model.$root, 'Hello Python!');
-// controller.insertTodo(model.$root, 'How are you?', 'Hello world!');
-// controller.insertTodo(model.$root, 'I am bangin', 'How are you?');
-// controller.insertTodo(model.$root, 'Lets do it.', 'Hello world!');
-
-// controller.insertTodo(model.$root, 'Root 1');
-// controller.insertTodo(model.$root, 'Root 2');
-// controller.insertTodo(model.$root, 'Root 3');
-// controller.insertTodo(model.$root, 'Root 1 - Sub 1', 'Root 1');
-// controller.insertTodo(model.$root, 'Sub 1 - Sub 1', 'Root 1 - Sub 1');
-// controller.insertTodo(model.$root, 'Root 1 - Sub 2', 'Root 1');
 
 console.log(model.$root);
 view.consoleRender(model.$root);

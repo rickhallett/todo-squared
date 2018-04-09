@@ -239,12 +239,6 @@ let controller = {
   }
 };
 
-
-
-/*********************************************
- *          UNDER CONSTRUCTION *
- ********************************************/
-
 function constructContainer() {
   //create container div for app
   let todoContainer = document.createElement('div');
@@ -272,11 +266,11 @@ function constructContainer() {
   return todoContainer;
 }
 
-function constructTodoComponent(text, parentText) {
+function constructTodoComponent(text, id) {
   //create todo div to create consistent todo styling
   let todoLI = document.createElement('li');
   todoLI.className = 'todo';
-  // todoLI.dataset.parent = parentText;
+  todoLI.dataset.id = id;
 
   let todoText = document.createElement('div');
   todoText.className = 'todo-text';
@@ -311,15 +305,14 @@ function constructTodoList() {
   return todoList;
 }
 
-function constructSubTodoList(/*parentElement*/) {
+function constructSubTodoList() {
   let subTodoList = document.createElement('ul');
   subTodoList.className = 'sub-todo-list';
-  // subTodoList.dataset.parentElement = parentElement;
   return subTodoList;
 }
 
-function insertTodo(text, parentText, parent_node) {
-  let newTodo = constructTodoComponent(text, parentText);
+function insertTodo(text, id, parent_node) {
+  let newTodo = constructTodoComponent(text, id);
   parent_node.insertAdjacentElement('beforeend', newTodo);
 }
 
@@ -344,8 +337,6 @@ inDevelopment.render = function () {
   let previousTodo;
 
   (function constructDOM(fromArray, subTodoContainer) {
-    
-
     fromArray.forEach(function (currentTodo) {
       let v = virtualDOM;
 
@@ -353,11 +344,11 @@ inDevelopment.render = function () {
       if (currentTodo.parent === '$root') {
         currentContainer = virtualDOM;
       }
-      
-      insertTodo(currentTodo.text, currentTodo.parent, currentContainer);
 
+      insertTodo(currentTodo.text, currentTodo.id, currentContainer);
+
+      //base case
       if (currentTodo.subTodo === null) {
-        //base case
         //move container pointer up one level to accommodate further todos at this depth
         //use if to prevent moving up level at $root node
         if(currentContainer.parentNode !== null) {
@@ -373,12 +364,15 @@ inDevelopment.render = function () {
           }
         }
 
+      //recursive case
       } else {
-        //recursive case
+        
         let newSubContainer = constructSubTodoList();
         placeInside(newSubContainer, currentContainer);
+
         //move container pointer down one level to accommodate recursion
         currentContainer = currentContainer.lastChild;
+
         //store pointer to this todo and traverse into subTodos
         previousTodo = currentTodo;
         return constructDOM(currentTodo.subTodo);
