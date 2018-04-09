@@ -276,7 +276,7 @@ function constructTodoComponent(text, parentText) {
   //create todo div to create consistent todo styling
   let todoLI = document.createElement('li');
   todoLI.className = 'todo';
-  todoLI.dataset.parent = parentText;
+  // todoLI.dataset.parent = parentText;
 
   let todoText = document.createElement('div');
   todoText.className = 'todo-text';
@@ -334,41 +334,43 @@ function placeNextTo(child_node, parent_node) {
 inDevelopment.render = function () {
   //grab master todo list and create container div
   let app = document.getElementById('app');
-
   let todoContainer = constructContainer();
+
+  //allocate memory for construction of HTML
   let virtualDOM = constructTodoList();
-  //copy virtualDOM to hold position in recursion
+
+  //copy virtualDOM to hold position in recursion (for readability)
   let currentContainer = virtualDOM;
+  let previousTodo;
 
   (function constructDOM(fromArray, subTodoContainer) {
+    
 
     fromArray.forEach(function (currentTodo) {
-
-      //do we need to place this before the if or will closures handle it?
+      let v = virtualDOM;
       insertTodo(currentTodo.text, currentTodo.parent, currentContainer);
 
       if (currentTodo.subTodo === null) {
         //base case
-        currentContainer = currentContainer; //don't modify
-        //don't recurse; carry on forEach iteration
+        //move container pointer up one level to accommodate further todos at this depth
+        //use if to prevent moving up level at $root node
+        if(currentContainer.parentNode !== null) {
+          //if SOMETHING, don't move pointer up
+          if(previousTodo.parent === currentTodo.parent) {
+            currentContainer = currentContainer;
+          } else {
+            currentContainer = currentContainer.parentNode;
+          }
+        }
       } else {
         //recursive case
         let newSubContainer = constructSubTodoList();
-
-        if(currentContainer.className === "sub-todo-list") {
-          placeInside(newSubContainer, currentContainer);
-          currentContainer = currentContainer.lastChild;
-        } else {
-          placeInside(newSubContainer, virtualDOM.lastChild);
-          let child_nodes = virtualDOM.lastChild.childNodes;
-          let last = child_nodes.length - 1;
-          currentContainer = child_nodes[last];
-        }
-      
-        // placeNextTo(newSubContainer, virtualDOM.lastChild);
-
-
-        return constructDOM(currentTodo.subTodo, currentContainer.lastChild);
+        placeInside(newSubContainer, currentContainer);
+        //move container pointer down one level to accommodate recursion
+        currentContainer = currentContainer.lastChild;
+        //store pointer to this todo and traverse into subTodos
+        previousTodo = currentTodo;
+        return constructDOM(currentTodo.subTodo);
       }
 
     });

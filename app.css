@@ -5,8 +5,13 @@ body {
 		color: rgb(97, 97, 97);
 	}
 
+	img {
+		height: 100px;
+		opacity: 0.5;
+	}
+
 	#app {
-		margin: 50px auto;
+		margin: 10px auto;
 		border: solid grey 3px;
 		min-height: 400px;
 		max-width: 425px;
