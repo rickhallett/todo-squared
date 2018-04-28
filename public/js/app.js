@@ -7,22 +7,6 @@ Todo List:
 //        escape the console
 // =================================
 
-let utils = {
-  generateID: function () {
-    const ALPHABET =
-      '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const ID_LENGTH = 8;
-    let rtn = '';
-    for ( let i = 0; i < ID_LENGTH; i++ ) {
-      rtn += ALPHABET.charAt( Math.floor( Math.random() * ALPHABET.length ) );
-      if ( i === 2 || i === 5 ) {
-        rtn += '-';
-      }
-    }
-    return rtn;
-  }
-};
-
 class TodoList {
   constructor() {
     this.$root = [];
@@ -47,17 +31,91 @@ class Todo {
 
 let inDevelopment = {};
 
+let utils = {
+  //NB: necessary to preserve as function declaration over arrow function as arrow function doesn't preserve arguments variable
+  store: function( namespace, data ) {
+    if ( arguments.length > 1 ) {
+      return localStorage.setItem( namespace, JSON.stringify( data ) );
+    } else {
+      var store = localStorage.getItem( namespace );
+      return ( store && JSON.parse( store ) ) || [];
+    }
+  },
+  generateID: () => {
+    const ALPHABET =
+      '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const ID_LENGTH = 8;
+    let rtn = '';
+    for ( let i = 0; i < ID_LENGTH; i++ ) {
+      rtn += ALPHABET.charAt( Math.floor( Math.random() * ALPHABET.length ) );
+      if ( i === 2 || i === 5 ) {
+        rtn += '-';
+      }
+    }
+    return rtn;
+  },
+  clone: ( val, deep ) => {
+    switch ( typeof ( val ) ) {
+      case 'array':
+        return val.slice();
+      case 'object':
+        return Object.assign( {}, val );
+      default: {
+        return val;
+      }
+    }
+  },
+  //NB: remove instanceClone functionality if not needed
+  cloneDeep: ( val, instanceClone ) => {
+    switch ( typeof ( val ) ) {
+      case 'object':
+        return this.cloneObjectDeep( val, instanceClone );
+      case 'array':
+        return this.cloneArrayDeep( val, instanceClone );
+      default: {
+        return clone( val );
+      }
+    }
+  },
+  cloneObjectDeep: ( val, instanceClone ) => {
+    if ( typeof instanceClone === 'function' ) {
+      return instanceClone( val );
+    }
+    if ( typeof ( val ) === 'object' ) {
+      const res = new val.constructor();
+      for ( const key in val ) {
+        res[ key ] = this.cloneDeep( val[ key ], instanceClone );
+      }
+      return res;
+    }
+    return val;
+  },
+  cloneArrayDeep: ( val, instanceClone ) => {
+    const res = new val.constructor( val.length );
+    for ( let i = 0; i < val.length; i++ ) {
+      res[ i ] = this.cloneDeep( val[ i ], instanceClone );
+    }
+    return res;
+  },
+  pluralize: ( count, word ) => {
+    return count === 1 ? word : word + 's';
+  },
+}
+
+
+
 let model = new TodoList();
 
 let controller = {
   editTodo: ( todoList, text, newText ) => {
-    return ( function editIn( array ) {
+
+    ( function editIn( array ) {
       array.forEach( function ( currentTodo ) {
         //base case
         if ( currentTodo.text === text ) {
           currentTodo.edit( newText );
-          return `"${ text }" was edited to "${ newText }"`;
-          return;
+          console.clear();
+          console.log( `"${ text }" was edited to "${ newText }"` );
         }
         //recursive case
         if ( currentTodo.subTodo !== null ) {
@@ -65,17 +123,20 @@ let controller = {
         }
       } );
     } )( todoList );
+
+    console.log( model.$root );
+    view.consoleRender( model.$root );
   },
   //TO ADD: find multiple matching todo texts if exist
   //USE CASE: controller.findTodo(model.$root, 'find this todo');
   findTodo: ( todoList, text ) => {
     let foundTodo;
-    return ( function findIn( array ) {
+    ( function findIn( array ) {
       array.forEach( function ( currentTodo ) {
         //base case
         if ( currentTodo.text === text ) {
           foundTodo = currentTodo;
-          return;
+          return void 0;
         }
         //recursive case
         if ( currentTodo.subTodo !== null ) {
@@ -88,7 +149,7 @@ let controller = {
   //USE CASE: controller.findTodo(model.$root, 'find this todo');
   insertTodo: ( todoList, text, parent ) => {
     if ( parent ) {
-      return ( function insertIn( array ) {
+      ( function insertIn( array ) {
         array.forEach( function ( currentTodo ) {
           //base case
           if ( currentTodo.text === parent ) {
@@ -97,9 +158,9 @@ let controller = {
               currentTodo.subTodo = [];
             }
             currentTodo.subTodo.push( new Todo( text, parent ) );
-            return `"${ text }" was inserted at "${ parent }"`;
-            //NB: does return stop for each?
-            return;
+            console.clear();
+            console.log( `"${ text }" was inserted at "${ parent }"` );
+            return void 0;
           }
           //recursive case
           if ( currentTodo.subTodo !== null ) {
@@ -109,45 +170,31 @@ let controller = {
       } )( todoList );
     } else {
       todoList.push( new Todo( text ) );
-      return `"${ text }" was inserted at $root`;
+      console.clear();
+      console.log( `"${ text }" was inserted at $root` );
     }
+    console.log( model.$root );
+    view.consoleRender( model.$root );
   },
   deleteTodo: ( todoList, text ) => {
-
-    /**
-     * deletes root level
-     * deletes to one level of depth
-     * 
-     * deleting prototype... deletes get some interviews (previous depth)
-     * deleteing complete BYOA... deletes get some interviews
-     * deleting master vue.js... deletes get sme interviews
-     *    rule: if deleting 2nd depth with previous third depth, it will delete the third depth in error
-     *    problem: previousTodo will always store the last todo to have subtodos, so when recursing back up the tree, the 2nd depth todo has its previousTodo pointing to the previous 2nd depth todo, and not its own parent. 
-     */
-
     let ancestors = [];
-    return ( function deleteIn( array ) {
+    ( function deleteIn( array ) {
       array.forEach( function ( currentTodo ) {
         //base case
         if ( currentTodo.text === text ) {
-
           if ( currentTodo.parent === '$root' ) {
             let index = array.indexOf( currentTodo );
             array.splice( index, 1 );
+            console.clear();
+            console.log( `"${ text }" was deleted from $root` );
           } else {
-            let lastPrevious = ancestors[ ancestors.length - 1 ];
-            // let index = previousTodo.subTodo.indexOf( currentTodo );
-            let index = lastPrevious.subTodo.indexOf( currentTodo );
-            // previousTodo.subTodo.splice( index, 1 );
-            lastPrevious.subTodo.splice( index, 1 );
-            //if no previous todo (ie currently at $root)
+            let lastAncestor = ancestors[ ancestors.length - 1 ];
+            let index = lastAncestor.subTodo.indexOf( currentTodo );
+            lastAncestor.subTodo.splice( index, 1 );
+            console.clear();
+            console.log( `"${ text }" was deleted from "${ lastAncestor.text }"` );
           }
-
-          //concise logic
-          // let targetArray = currentTodo.parent === '$root' ? array : previousTodo.subTodo;
-          // targetArray.splice(targetArray.indexOf(currentTodo), 1);
-
-          return null;
+          return void 0;
         }
         //recursive case
         if ( currentTodo.subTodo !== null ) {
@@ -159,9 +206,11 @@ let controller = {
       } );
       ancestors.pop();
     } )( todoList );
+    console.log( model.$root );
+    view.consoleRender( model.$root );
   },
   toggleTodo: ( todoList, text ) => {
-    return ( function toggleIn( array ) {
+    ( function toggleIn( array ) {
       array.forEach( function ( currentTodo ) {
         //base case
         if ( currentTodo.text === text ) {
@@ -178,7 +227,7 @@ let controller = {
               } );
             } )( currentTodo.subTodo );
           }
-          return;
+          return void 0;
         }
         //single nested recursive case
         if ( currentTodo.subTodo !== null ) {
@@ -186,6 +235,9 @@ let controller = {
         }
       } );
     } )( todoList );
+    console.clear();
+    console.log( model.$root );
+    view.consoleRender( model.$root );
   },
   toggleAll: todoList => {
     //use 'every' to determine if all todos are toggled
@@ -213,6 +265,9 @@ let controller = {
         }
       } );
     } )( todoList );
+    console.clear();
+    console.log( model.$root );
+    view.consoleRender( model.$root );
   },
   totalTodos: todoList => {
     let counter = 0;
@@ -224,7 +279,7 @@ let controller = {
           return countIn( currentTodo.subTodo );
         }
         //base case
-        return;
+        return void 0;
       } );
       return counter;
     } )( todoList );
@@ -233,7 +288,9 @@ let controller = {
 
 let view = {
   consoleRender: todoList => {
-    console.log( `\nTodoList: ${ controller.totalTodos( todoList ) } item(s).\n \n` );
+    let totalTodos = controller.totalTodos( todoList );
+    let itemString = utils.pluralize( totalTodos, 'item' );
+    console.log( `\nTodoList: ${ totalTodos } ${ itemString }.\n \n` );
     let indentation = 0;
     ( function print( array ) {
       array.forEach( function ( currentTodo, index ) {
@@ -253,10 +310,11 @@ let view = {
           indentation++;
           return print( currentTodo.subTodo );
         }
-        return;
+        return void 0;
       } );
       indentation--;
     } )( todoList );
+    utils.store( 'todo-squared', model.$root );
   },
   render: () => {
     //grab master todo list and create container div
@@ -319,6 +377,7 @@ let view = {
     console.log( app );
     view.placeInside( virtualDOM, todoContainer );
     view.placeInside( todoContainer, app );
+    utils.store( 'todo-squared', model.$root );
   },
   constructContainer: () => {
     //create container div for app
