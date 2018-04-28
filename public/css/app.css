@@ -1,118 +1,134 @@
 body {
-		font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
-		line-height: 1.4em;
-		background: #f5f5f5;
-		color: rgb(97, 97, 97);
-	}
+	font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	line-height: 1.4em;
+	background: #f5f5f5;
+	color: rgb(97, 97, 97);
+}
 
-	img {
-		height: 100px;
-		opacity: 0.25;
-	}
+#instructions {
+	margin: 25px auto;
+	max-width: 425px;
+	box-shadow: 0 2px 4px 0 #00000033,
+	0 25px 50px 0 rgba(0, 0, 0, 0.1);
+}
 
-	#app {
-		margin: 10px auto;
-		border: solid grey 3px;
-		min-height: 400px;
-		max-width: 425px;
-		background: #fff;
-		box-shadow: 0 2px 4px 0 #00000033,
-		0 25px 50px 0 rgba(0, 0, 0, 0.1);
-	}
+.example {
+	margin-left: 10px;
+	font-size: 0.85em;
+}
 
-	#header {
-		color: black;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 15px;
-	}
+p {
+	text-align: left;
+}
+
+img {
+	height: 100px;
+	opacity: 0.25;
+}
+
+#app {
+	margin: 10px auto;
+	border: solid grey 3px;
+	min-height: 400px;
+	max-width: 425px;
+	background: #fff;
+	box-shadow: 0 2px 4px 0 #00000033,
+	0 25px 50px 0 rgba(0, 0, 0, 0.1);
+}
+
+#header {
+	color: black;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15px;
+}
 
 
-	.toggle-all {
-		transform: translate(-2px, 0px);
-		color: grey;
-	}
+.toggle-all {
+	transform: translate(-2px, 0px);
+	color: grey;
+}
 
-	.toggle-all:hover {
-		color: black;
-	}
+.toggle-all:hover {
+	color: black;
+}
 
-	input {
-		min-width: 275px;
-		font-size: 20px;
-		font-weight: 300;
-		font-style: italic;
-		color: #2c2c29;
-	}
+input {
+	min-width: 275px;
+	font-size: 20px;
+	font-weight: 300;
+	font-style: italic;
+	color: #2c2c29;
+}
 
-	#add-todo {
-		background: #3498db;
-		border-radius: 5px;
-		color: #ffffff;
-		font-size: 15px;
-		/* margin-left: 15px; */
-		padding: 5px 5px;
-		text-decoration: none;
-	}
+#add-todo {
+	background: #3498db;
+	border-radius: 5px;
+	color: #ffffff;
+	font-size: 15px;
+	/* margin-left: 15px; */
+	padding: 5px 5px;
+	text-decoration: none;
+}
 
-	#add-todo:focus {
-		outline: 0;
-	}
+#add-todo:focus {
+	outline: 0;
+}
 
-	#add-todo:hover {
-		background: #3cb0fd;
-		text-decoration: none;
-	}
+#add-todo:hover {
+	background: #3cb0fd;
+	text-decoration: none;
+}
 
-	.destroy {
-		border: none;
-		font-size: 15px;
-		color: #e6e6e6;
-	}
+.destroy {
+	border: none;
+	font-size: 15px;
+	color: #e6e6e6;
+}
 
-	.destroy:focus {
-		outline: 0;
-	}
+.destroy:focus {
+	outline: 0;
+}
 
-	.destroy:hover {
-		color: firebrick;
-		cursor: pointer;
-	}
+.destroy:hover {
+	color: firebrick;
+	cursor: pointer;
+}
 
-	.todoContainer {
-		padding: 20px;
-	}
+.todoContainer {
+	padding: 20px;
+}
 
-	#todo-list {
-		margin-top: 10px;
-	}
+#todo-list {
+	margin-top: 10px;
+}
 
-	#toggle {
-		margin: 0;
-	}
+#toggle {
+	margin: 0;
+}
 
-	ul {
-		padding: 0;
-		margin: 0;
-	}
+ul {
+	padding: 0;
+	margin: 0;
+}
 
-	li {
-		list-style-type: none;
-		margin-bottom: 5px;
-	}
+li {
+	list-style-type: none;
+	margin-bottom: 5px;
+}
 
-	.todo {
-		display: flex;
-		/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
-		justify-content: space-between;
-		/* This property counts all the children and spaces them accordingly */
-		align-items: center;
-	}
+.todo {
+	display: flex;
+	/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+	justify-content: space-between;
+	/* This property counts all the children and spaces them accordingly */
+	align-items: center;
+}
 
-	.sub-todo-list {
-		padding-left: 20px;
-		color: grey;
-	}
+.sub-todo-list {
+	padding-left: 20px;
+	color: grey;
+}
 
 

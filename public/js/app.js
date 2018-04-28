@@ -32,8 +32,29 @@ class Todo {
 let inDevelopment = {};
 
 let utils = {
+  init: () => {
+    // model.$root = utils.store('todo-squared');
+    utils.setupConsole();
+    seedData();
+    view.render( model.$root );
+  },
+  setupConsole: () => {
+    const commands = {
+      ins: controller.insertTodo.bind( null, model.$root ),
+      del: controller.deleteTodo.bind( null, model.$root ),
+      edit: controller.editTodo.bind( null, model.$root ),
+      tog: controller.toggleTodo.bind( null, model.$root ),
+      togall: controller.toggleAll.bind( null, model.$root )
+    }
+    window.app = commands;
+    // const ins = controller.insertTodo.bind( null, [ model.$root ] )
+    // const del = controller.deleteTodo.bind( null, [ model.$root ] );
+    // const edit = controller.editTodo.bind( null, [ model.$root ] );
+    // const tog = controller.toggleTodo.bind( null, [ model.$root ] );
+    // const togall = controller.toggleAll.bind( null, [ model.$root ] );
+  },
   //NB: necessary to preserve as function declaration over arrow function as arrow function doesn't preserve arguments variable
-  store: function( namespace, data ) {
+  store: function ( namespace, data ) {
     if ( arguments.length > 1 ) {
       return localStorage.setItem( namespace, JSON.stringify( data ) );
     } else {
@@ -54,52 +75,16 @@ let utils = {
     }
     return rtn;
   },
-  clone: ( val, deep ) => {
-    switch ( typeof ( val ) ) {
-      case 'array':
-        return val.slice();
-      case 'object':
-        return Object.assign( {}, val );
-      default: {
-        return val;
-      }
-    }
-  },
-  //NB: remove instanceClone functionality if not needed
-  cloneDeep: ( val, instanceClone ) => {
-    switch ( typeof ( val ) ) {
-      case 'object':
-        return this.cloneObjectDeep( val, instanceClone );
-      case 'array':
-        return this.cloneArrayDeep( val, instanceClone );
-      default: {
-        return clone( val );
-      }
-    }
-  },
-  cloneObjectDeep: ( val, instanceClone ) => {
-    if ( typeof instanceClone === 'function' ) {
-      return instanceClone( val );
-    }
-    if ( typeof ( val ) === 'object' ) {
-      const res = new val.constructor();
-      for ( const key in val ) {
-        res[ key ] = this.cloneDeep( val[ key ], instanceClone );
-      }
-      return res;
-    }
-    return val;
-  },
-  cloneArrayDeep: ( val, instanceClone ) => {
-    const res = new val.constructor( val.length );
-    for ( let i = 0; i < val.length; i++ ) {
-      res[ i ] = this.cloneDeep( val[ i ], instanceClone );
-    }
-    return res;
-  },
   pluralize: ( count, word ) => {
     return count === 1 ? word : word + 's';
   },
+  exitIfEqual: ( originalModel, alteredModel, functionType ) => {
+    if ( _.isEqual( originalModel, model.$root ) ) {
+      console.log( `%c${ functionType } was unsuccessful`, "color: red" );
+      return true;
+    }
+    return void 0;
+  }
 }
 
 
@@ -108,6 +93,8 @@ let model = new TodoList();
 
 let controller = {
   editTodo: ( todoList, text, newText ) => {
+    // let originalModel = utils.cloneDeep( model.$root );
+    let originalModel = cloneDeep( model.$root );
 
     ( function editIn( array ) {
       array.forEach( function ( currentTodo ) {
@@ -122,9 +109,10 @@ let controller = {
           return editIn( currentTodo.subTodo );
         }
       } );
-    } )( todoList );
+    } )( todoList )
 
-    console.log( model.$root );
+    if ( utils.exitIfEqual( originalModel, model.$root, 'edit' ) ) return void 0;
+
     view.consoleRender( model.$root );
   },
   //TO ADD: find multiple matching todo texts if exist
@@ -148,6 +136,7 @@ let controller = {
   },
   //USE CASE: controller.findTodo(model.$root, 'find this todo');
   insertTodo: ( todoList, text, parent ) => {
+    let originalModel = cloneDeep( model.$root );
     if ( parent ) {
       ( function insertIn( array ) {
         array.forEach( function ( currentTodo ) {
@@ -170,13 +159,18 @@ let controller = {
       } )( todoList );
     } else {
       todoList.push( new Todo( text ) );
+      //make sure model is updated (due to setupApp copying model)
+      // model.$root = todoList;
       console.clear();
       console.log( `"${ text }" was inserted at $root` );
     }
-    console.log( model.$root );
+
+    if ( utils.exitIfEqual( originalModel, model.$root, 'insert' ) ) return void 0;
+
     view.consoleRender( model.$root );
   },
   deleteTodo: ( todoList, text ) => {
+    let originalModel = cloneDeep( model.$root );
     let ancestors = [];
     ( function deleteIn( array ) {
       array.forEach( function ( currentTodo ) {
@@ -206,7 +200,9 @@ let controller = {
       } );
       ancestors.pop();
     } )( todoList );
-    console.log( model.$root );
+
+    if ( utils.exitIfEqual( originalModel, model.$root, 'delete' ) ) return void 0;
+
     view.consoleRender( model.$root );
   },
   toggleTodo: ( todoList, text ) => {
@@ -236,7 +232,6 @@ let controller = {
       } );
     } )( todoList );
     console.clear();
-    console.log( model.$root );
     view.consoleRender( model.$root );
   },
   toggleAll: todoList => {
@@ -456,12 +451,7 @@ let view = {
   }
 };
 
-/*
-if (node.parentNode) {
-  // remove a node from the tree, unless
-  // it's not in the tree already
-  node.parentNode.removeChild(node);
-}
-*/
+utils.init();
+
 
 
