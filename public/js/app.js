@@ -47,11 +47,6 @@ let utils = {
       togall: controller.toggleAll.bind( null, model.$root )
     }
     window.app = commands;
-    // const ins = controller.insertTodo.bind( null, [ model.$root ] )
-    // const del = controller.deleteTodo.bind( null, [ model.$root ] );
-    // const edit = controller.editTodo.bind( null, [ model.$root ] );
-    // const tog = controller.toggleTodo.bind( null, [ model.$root ] );
-    // const togall = controller.toggleAll.bind( null, [ model.$root ] );
   },
   //NB: necessary to preserve as function declaration over arrow function as arrow function doesn't preserve arguments variable
   store: function ( namespace, data ) {
@@ -87,11 +82,12 @@ let utils = {
   }
 }
 
-
-
 let model = new TodoList();
 
 let controller = {
+  //BUG: editTodo will change all todos that have indentical text
+  //proposed solution: find todo by id and delete by id
+  //proposed solution: count todos that have identical text and if > 1 then prompt user to define parent todo text name
   editTodo: ( todoList, text, newText ) => {
     // let originalModel = utils.cloneDeep( model.$root );
     let originalModel = cloneDeep( model.$root );
