@@ -5,7 +5,7 @@ seedData = () => {
     'master watchandcode'
   );
   controller.insertTodo( model.$root,
-    'become a javascript ninja'
+    'become js man'
   );
   controller.insertTodo( model.$root,
     'overthrow gordon'
@@ -26,22 +26,22 @@ seedData = () => {
   controller.insertTodo(
     model.$root,
     'get a javascript developer job',
-    'become a javascript ninja'
+    'become js man'
   );
   controller.insertTodo(
     model.$root,
     'prototype nested todo list',
-    'become a javascript ninja'
+    'become js man'
   );
   controller.insertTodo(
     model.$root,
     'complete BYOA',
-    'become a javascript ninja'
+    'become js man'
   );
   controller.insertTodo(
     model.$root,
     'master vue.js',
-    'become a javascript ninja'
+    'become js man'
   );
   controller.insertTodo(
     model.$root,
