@@ -54,7 +54,7 @@ img {
 	color: black;
 }
 
-input {
+#enter {
 	min-width: 275px;
 	font-size: 20px;
 	font-weight: 300;
@@ -79,6 +79,11 @@ input {
 #add-todo:hover {
 	background: #3cb0fd;
 	text-decoration: none;
+}
+
+.edit-input {
+	/* min-width: 250px; */
+	font-size: 14px;
 }
 
 .destroy {

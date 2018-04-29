@@ -7,6 +7,9 @@ Todo List:
 //        escape the console
 // =================================
 
+const ENTER_KEY = 13;
+const ESCAPE_KEY = 27;
+
 class TodoList {
   constructor() {
     this.$root = [];
@@ -87,17 +90,17 @@ let controller = {
   //proposed solution: find todo by id and delete by id
   //proposed solution: count todos that have identical text and if > 1 then prompt user to define parent todo text name
   //:bug: change child parents on edit
-  editTodo: ( todoList, text, newText ) => {
+  editTodo: ( todoList, id, newText ) => {
     // let originalModel = utils.cloneDeep( model.$root );
     let originalModel = cloneDeep( model.$root );
 
     ( function editIn( array ) {
       array.forEach( function ( currentTodo ) {
         //base case
-        if ( currentTodo.text === text ) {
+        if ( currentTodo.id === id ) {
           currentTodo.edit( newText );
           console.clear();
-          console.log( `"${ text }" was edited to "${ newText }"` );
+          console.log( `"${ id }" was edited to "${ newText }"` );
         }
         //recursive case
         if ( currentTodo.subTodo !== null ) {
@@ -416,11 +419,45 @@ let view = {
     //create editInput, set default to hide and also insert to todo-text div
     let editInput = document.createElement( 'input' );
     editInput.className = 'edit-input';
+    editInput.maxLength = 35;
     editInput.style.display = 'none'
 
-    todo.addEventListener( 'dblclick', function ( event ) {
+    function showInput( event ) {
       event.target.style.display = 'none';
       editInput.style.display = 'inline';
+    }
+
+    function showTodo() {
+      editInput.style.display = 'none';
+      todo.style.display = 'inline';
+    }
+
+    todo.addEventListener( 'dblclick', function ( event ) {
+      let textToEdit = todo.innerText;
+      showInput( event );
+      editInput.value = textToEdit;
+      editInput.focus();
+    } );
+
+    editInput.addEventListener( 'keydown', function ( event ) {
+      if ( event.which === ESCAPE_KEY ) {
+        showTodo();
+      }
+      if ( event.which === ENTER_KEY ) {
+        let newText = editInput.value;
+        newText.trim();
+        controller.editTodo( model.$root, id, newText );
+      }
+    } );
+
+    editInput.addEventListener( 'blur', function () {
+      if ( editInput.value.length < 1 ) {
+        showTodo();
+      } else {
+        let newText = editInput.value;
+        newText.trim();
+        controller.editTodo( model.$root, id, newText );
+      }
     } );
 
     todoText.appendChild( todo );
@@ -445,6 +482,7 @@ let view = {
   constructTodoList: () => {
     let todoList = document.createElement( 'ul' );
     todoList.className = 'todo-list';
+
     return todoList;
   },
   constructSubTodoList: () => {
