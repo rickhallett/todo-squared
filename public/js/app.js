@@ -29,8 +29,6 @@ class Todo {
   }
 }
 
-let inDevelopment = {};
-
 let utils = {
   init: () => {
     // model.$root = utils.store('todo-squared');
@@ -88,6 +86,7 @@ let controller = {
   //BUG: editTodo will change all todos that have indentical text
   //proposed solution: find todo by id and delete by id
   //proposed solution: count todos that have identical text and if > 1 then prompt user to define parent todo text name
+  //:bug: change child parents on edit
   editTodo: ( todoList, text, newText ) => {
     // let originalModel = utils.cloneDeep( model.$root );
     let originalModel = cloneDeep( model.$root );
@@ -109,6 +108,7 @@ let controller = {
 
     if ( utils.exitIfEqual( originalModel, model.$root, 'edit' ) ) return void 0;
 
+    view.render();
     view.consoleRender( model.$root );
   },
   //TO ADD: find multiple matching todo texts if exist
@@ -163,6 +163,7 @@ let controller = {
 
     if ( utils.exitIfEqual( originalModel, model.$root, 'insert' ) ) return void 0;
 
+    view.render();
     view.consoleRender( model.$root );
   },
   deleteTodo: ( todoList, text ) => {
@@ -199,6 +200,7 @@ let controller = {
 
     if ( utils.exitIfEqual( originalModel, model.$root, 'delete' ) ) return void 0;
 
+    view.render();
     view.consoleRender( model.$root );
   },
   toggleTodo: ( todoList, text ) => {
@@ -228,6 +230,7 @@ let controller = {
       } );
     } )( todoList );
     console.clear();
+    view.render();
     view.consoleRender( model.$root );
   },
   toggleAll: todoList => {
@@ -257,7 +260,7 @@ let controller = {
       } );
     } )( todoList );
     console.clear();
-    console.log( model.$root );
+    view.render();
     view.consoleRender( model.$root );
   },
   totalTodos: todoList => {
@@ -308,67 +311,59 @@ let view = {
     utils.store( 'todo-squared', model.$root );
   },
   render: () => {
-    //grab master todo list and create container div
+    //grab master todo list
     let app = document.getElementById( 'app' );
+    ///delete current DOM
+    app.innerHTML = '';
+    //create container div
     let todoContainer = view.constructContainer();
-
     //allocate memory for construction of HTML
     let virtualDOM = view.constructTodoList();
-
     //copy virtualDOM to hold position in recursion (for readability)
     let currentContainer = virtualDOM;
     let previousTodo;
+    let ancestorPath = [];
+    ancestorPath.push( currentContainer );
 
     ( function constructDOM( fromArray ) {
-      fromArray.forEach( function ( currentTodo ) {
-        let v = virtualDOM;
-
-        //check for root depth to over-ride step by step depth finding
+      fromArray.forEach( function ( currentTodo, index ) {
+        //if function has returned to root level, ensure ancestorPath is also reset
         if ( currentTodo.parent === '$root' ) {
-          currentContainer = virtualDOM;
+          ancestorPath = ancestorPath.slice( 0, 1 );
+          //reset current container to todo app container
+          currentContainer = ancestorPath[ 0 ];
         }
+        let lastAncestor = ancestorPath[ ancestorPath.length - 1 ];
+        view.insertTodo( currentTodo.text, currentTodo.id, lastAncestor );
 
-        view.insertTodo( currentTodo.text, currentTodo.id, currentContainer );
-
-        //base case
-        if ( currentTodo.subTodo === null ) {
-          //move container pointer up one level to accommodate further todos at this depth
-          //use if to prevent moving up level at $root node
-          if ( currentContainer.parentNode !== null ) {
-            //if SOMETHING, don't move pointer up
-
-            //step-by-step depth finding
-            if ( previousTodo.parent === currentTodo.parent ) {
-              currentContainer = currentContainer;
-            } else if ( previousTodo.text === currentTodo.parent ) {
-              currentContainer = currentContainer;
-            } else {
-              currentContainer = currentContainer.parentNode;
-            }
-          }
-
-          //recursive case
-        } else {
-
+        //recursive case
+        if ( currentTodo.subTodo !== null ) {
           let newSubContainer = view.constructSubTodoList();
-          view.placeInside( newSubContainer, currentContainer );
-
-          //move container pointer down one level to accommodate recursion
+          view.placeInside( newSubContainer, lastAncestor );
+          //add next depth to record
           currentContainer = currentContainer.lastChild;
-
-          //store pointer to this todo and traverse into subTodos
-          previousTodo = currentTodo;
+          ancestorPath.push( currentContainer );
           return constructDOM( currentTodo.subTodo );
         }
 
-      } );
+        //base case
+        //after returning from recursion (ie moving up one depth), pop ancestorPath
+        //guard against popping if not at the end of subTodos array
+        if ( index === fromArray.length - 1 ) {
+          currentContainer = currentContainer.parentNode;
+          if ( ancestorPath.length > 1 ) return ancestorPath.pop();
+          return void 0;
+        }
 
+      } );
     } )( model.$root );
 
-    console.log( app );
     view.placeInside( virtualDOM, todoContainer );
     view.placeInside( todoContainer, app );
     utils.store( 'todo-squared', model.$root );
+  },
+  setupEventListeners: () => {
+
   },
   constructContainer: () => {
     //create container div for app
@@ -400,6 +395,7 @@ let view = {
     //create todo div to create consistent todo styling
     let todoLI = document.createElement( 'li' );
     todoLI.className = 'todo';
+    todoLI.dataset.name = text;
     todoLI.dataset.id = id;
 
     let todoText = document.createElement( 'div' );

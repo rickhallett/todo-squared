@@ -12,7 +12,7 @@
       <div id="instructions">
         <p style="margin-bottom: 20px;">For Console Application:</p>
         <p>open console</p>
-        <p><strong>Add todo: </strong><code>app.ins(model.$root, [todo text: String], [todo parent: String]);</code></p>
+        <p><strong>Add todo: </strong><code>app.ins([todo text: String], [todo parent: String]);</code></p>
         <p>
           <code class="example">app.ins('add this todo', 'master watchandcode');</code>
         </p>
@@ -20,7 +20,7 @@
           <em>(Without a todo parent string, the app will add the todo to the root level.)</em>
         </p>
         <p><strong>Delete todo:</strong>
-        <code>app.del(model.$root, [todo text: String]);</code></p>
+        <code>app.del([todo text: String]);</code></p>
         <p>
           <code class="example">app.del('delete this todo');</code>
         </p>
