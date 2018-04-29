@@ -81,6 +81,10 @@ img {
 	text-decoration: none;
 }
 
+.expander {
+	margin-left: 5px;
+}
+
 .edit-input {
 	/* min-width: 250px; */
 	font-size: 14px;
@@ -109,7 +113,7 @@ img {
 	margin-top: 10px;
 }
 
-#toggle {
+.toggle {
 	margin: 0;
 }
 

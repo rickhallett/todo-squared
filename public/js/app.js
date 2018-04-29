@@ -206,11 +206,11 @@ let controller = {
     view.render();
     view.consoleRender( model.$root );
   },
-  toggleTodo: ( todoList, text ) => {
+  toggleTodo: ( todoList, id ) => {
     ( function toggleIn( array ) {
       array.forEach( function ( currentTodo ) {
         //base case
-        if ( currentTodo.text === text ) {
+        if ( currentTodo.id === id ) {
           currentTodo.completed = !currentTodo.completed;
           let shouldToggle = currentTodo.completed;
           //toggle children recursive case
@@ -338,7 +338,7 @@ let view = {
           currentContainer = ancestorPath[ 0 ];
         }
         let lastAncestor = ancestorPath[ ancestorPath.length - 1 ];
-        view.insertTodo( currentTodo.text, currentTodo.id, lastAncestor );
+        view.insertTodo( currentTodo, lastAncestor );
 
         //recursive case
         if ( currentTodo.subTodo !== null ) {
@@ -395,12 +395,12 @@ let view = {
     todoContainer.appendChild( header );
     return todoContainer;
   },
-  constructTodoComponent: ( text, id ) => {
+  constructTodoComponent: ( todo ) => {
     //create todo div to create consistent todo styling
     let todoLI = document.createElement( 'li' );
     todoLI.className = 'todo';
-    todoLI.dataset.name = text;
-    todoLI.dataset.id = id;
+    todoLI.dataset.name = todo.text;
+    todoLI.dataset.id = todo.id;
 
     let todoText = document.createElement( 'div' );
     todoText.className = 'todo-text';
@@ -408,13 +408,26 @@ let view = {
     //create checkbox and insert it into todo-text div
     let toggleCheckbox = document.createElement( 'input' );
     toggleCheckbox.type = 'checkbox';
-    toggleCheckbox.id = 'toggle';
+    toggleCheckbox.checked = todo.completed;
+    toggleCheckbox.className = 'toggle';
+
+    toggleCheckbox.addEventListener( 'click', function () {
+      controller.toggleTodo( model.$root, todo.id );
+    } );
+
     todoText.appendChild( toggleCheckbox );
 
+    //create checkbox and insert it into todo-text div
+    let expander = document.createElement( 'label' );
+    // expandCheckbox.type = 'checkbox';
+    expander.innerText = '+';
+    expander.className = 'expander';
+    todoText.appendChild( expander );
+
     //create todo text label and insert it into todo-text div
-    let todo = document.createElement( 'label' );
+    let todoLabel = document.createElement( 'label' );
     //HACK: unknown cause of label text closer to checkbox when created through model function
-    todo.textContent = ' ' + text;
+    todoLabel.textContent = ' ' + todo.text;
 
     //create editInput, set default to hide and also insert to todo-text div
     let editInput = document.createElement( 'input' );
@@ -432,8 +445,8 @@ let view = {
       todo.style.display = 'inline';
     }
 
-    todo.addEventListener( 'dblclick', function ( event ) {
-      let textToEdit = todo.innerText;
+    todoLabel.addEventListener( 'dblclick', function ( event ) {
+      let textToEdit = todoLabel.innerText;
       showInput( event );
       editInput.value = textToEdit;
       editInput.focus();
@@ -460,7 +473,7 @@ let view = {
       }
     } );
 
-    todoText.appendChild( todo );
+    todoText.appendChild( todoLabel );
     todoText.appendChild( editInput );
 
     //insert compound todo-text div into parent todo div
@@ -490,8 +503,8 @@ let view = {
     subTodoList.className = 'sub-todo-list';
     return subTodoList;
   },
-  insertTodo: ( text, id, parent_node ) => {
-    let newTodo = view.constructTodoComponent( text, id );
+  insertTodo: ( todo, parent_node ) => {
+    let newTodo = view.constructTodoComponent( todo );
     parent_node.insertAdjacentElement( 'beforeend', newTodo );
   },
   placeInside: ( child_node, parent_node ) => {
