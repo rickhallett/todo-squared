@@ -108,6 +108,7 @@ let controller = {
 
     if ( utils.exitIfEqual( originalModel, model.$root, 'edit' ) ) return void 0;
 
+    view.render();
     view.consoleRender( model.$root );
   },
   //TO ADD: find multiple matching todo texts if exist
@@ -162,6 +163,7 @@ let controller = {
 
     if ( utils.exitIfEqual( originalModel, model.$root, 'insert' ) ) return void 0;
 
+    view.render();
     view.consoleRender( model.$root );
   },
   deleteTodo: ( todoList, text ) => {
@@ -198,6 +200,7 @@ let controller = {
 
     if ( utils.exitIfEqual( originalModel, model.$root, 'delete' ) ) return void 0;
 
+    view.render();
     view.consoleRender( model.$root );
   },
   toggleTodo: ( todoList, text ) => {
@@ -227,6 +230,7 @@ let controller = {
       } );
     } )( todoList );
     console.clear();
+    view.render();
     view.consoleRender( model.$root );
   },
   toggleAll: todoList => {
@@ -256,7 +260,7 @@ let controller = {
       } );
     } )( todoList );
     console.clear();
-    console.log( model.$root );
+    view.render();
     view.consoleRender( model.$root );
   },
   totalTodos: todoList => {
@@ -307,23 +311,21 @@ let view = {
     utils.store( 'todo-squared', model.$root );
   },
   render: () => {
-    //grab master todo list and create container div
+    //grab master todo list
     let app = document.getElementById( 'app' );
+    ///delete current DOM
+    app.innerHTML = '';
+    //create container div
     let todoContainer = view.constructContainer();
-
     //allocate memory for construction of HTML
     let virtualDOM = view.constructTodoList();
-
     //copy virtualDOM to hold position in recursion (for readability)
     let currentContainer = virtualDOM;
     let previousTodo;
-
     let ancestorPath = [];
     ancestorPath.push( currentContainer );
 
     ( function constructDOM( fromArray ) {
-      virtualDOM = virtualDOM;
-      console.log( virtualDOM );
       fromArray.forEach( function ( currentTodo, index ) {
         //if function has returned to root level, ensure ancestorPath is also reset
         if ( currentTodo.parent === '$root' ) {
@@ -332,7 +334,6 @@ let view = {
           currentContainer = ancestorPath[ 0 ];
         }
         let lastAncestor = ancestorPath[ ancestorPath.length - 1 ];
-
         view.insertTodo( currentTodo.text, currentTodo.id, lastAncestor );
 
         //recursive case
@@ -355,14 +356,14 @@ let view = {
         }
 
       } );
-      // if ( ancestorPath.length > 1 ) 
-      // ancestorPath.pop();
     } )( model.$root );
 
-    console.log( virtualDOM );
     view.placeInside( virtualDOM, todoContainer );
     view.placeInside( todoContainer, app );
     utils.store( 'todo-squared', model.$root );
+  },
+  setupEventListeners: () => {
+
   },
   constructContainer: () => {
     //create container div for app
