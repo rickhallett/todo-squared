@@ -325,6 +325,12 @@ let view = {
       virtualDOM = virtualDOM;
       console.log( virtualDOM );
       fromArray.forEach( function ( currentTodo, index ) {
+        //if function has returned to root level, ensure ancestorPath is also reset
+        if ( currentTodo.parent === '$root' ) {
+          ancestorPath = ancestorPath.slice( 0, 1 );
+          //reset current container to todo app container
+          currentContainer = ancestorPath[ 0 ];
+        }
         let lastAncestor = ancestorPath[ ancestorPath.length - 1 ];
 
         view.insertTodo( currentTodo.text, currentTodo.id, lastAncestor );
