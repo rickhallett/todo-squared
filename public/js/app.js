@@ -412,7 +412,19 @@ let view = {
     let todo = document.createElement( 'label' );
     //HACK: unknown cause of label text closer to checkbox when created through model function
     todo.textContent = ' ' + text;
+
+    //create editInput, set default to hide and also insert to todo-text div
+    let editInput = document.createElement( 'input' );
+    editInput.className = 'edit-input';
+    editInput.style.display = 'none'
+
+    todo.addEventListener( 'dblclick', function ( event ) {
+      event.target.style.display = 'none';
+      editInput.style.display = 'inline';
+    } );
+
     todoText.appendChild( todo );
+    todoText.appendChild( editInput );
 
     //insert compound todo-text div into parent todo div
     todoLI.appendChild( todoText );
