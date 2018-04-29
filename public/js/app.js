@@ -166,24 +166,24 @@ let controller = {
     view.render();
     view.consoleRender( model.$root );
   },
-  deleteTodo: ( todoList, text ) => {
+  deleteTodo: ( todoList, id ) => {
     let originalModel = cloneDeep( model.$root );
     let ancestors = [];
     ( function deleteIn( array ) {
       array.forEach( function ( currentTodo ) {
         //base case
-        if ( currentTodo.text === text ) {
+        if ( currentTodo.id === id ) {
           if ( currentTodo.parent === '$root' ) {
             let index = array.indexOf( currentTodo );
             array.splice( index, 1 );
             console.clear();
-            console.log( `"${ text }" was deleted from $root` );
+            console.log( `"${ id }" was deleted from $root` );
           } else {
             let lastAncestor = ancestors[ ancestors.length - 1 ];
             let index = lastAncestor.subTodo.indexOf( currentTodo );
             lastAncestor.subTodo.splice( index, 1 );
             console.clear();
-            console.log( `"${ text }" was deleted from "${ lastAncestor.text }"` );
+            console.log( `"${ id }" was deleted from "${ lastAncestor.text }"` );
           }
           return void 0;
         }
@@ -309,6 +309,7 @@ let view = {
       indentation--;
     } )( todoList );
     utils.store( 'todo-squared', model.$root );
+    console.log( model.$root );
   },
   render: () => {
     //grab master todo list
@@ -420,6 +421,11 @@ let view = {
     let destroyButton = document.createElement( 'button' );
     destroyButton.className = 'destroy';
     destroyButton.textContent = 'x';
+
+    destroyButton.addEventListener( 'click', function ( event ) {
+      controller.deleteTodo( model.$root, id );
+    } );
+
     todoLI.appendChild( destroyButton );
 
     return todoLI;
