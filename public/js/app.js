@@ -24,11 +24,16 @@ class Todo {
     this.completed = false;
     this.dateCreated = new Date();
     this.subTodo = null;
+    this.isExpanded = false;
   }
 
   edit( text ) {
     this.text = text;
     this.dateModified = new Date();
+  }
+
+  toggleExpand() {
+    this.isExpanded = !this.isExpanded;
   }
 }
 
@@ -341,7 +346,7 @@ let view = {
         view.insertTodo( currentTodo, lastAncestor );
 
         //recursive case
-        if ( currentTodo.subTodo !== null ) {
+        if ( currentTodo.subTodo !== null && currentTodo.isExpanded === true ) {
           let newSubContainer = view.constructSubTodoList();
           view.placeInside( newSubContainer, lastAncestor );
           //add next depth to record
@@ -469,8 +474,14 @@ let view = {
     //create checkbox and insert it into todo-text div
     let expander = document.createElement( 'label' );
     // expandCheckbox.type = 'checkbox';
-    expander.innerText = '+';
+    expander.innerText = todo.subTodo ? '+' : '-';
     expander.className = 'expander';
+
+    expander.addEventListener( 'click', function () {
+      todo.toggleExpand();
+      view.render();
+    } );
+
     todoText.appendChild( expander );
 
     //create todo text label and insert it into todo-text div
