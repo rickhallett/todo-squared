@@ -39,6 +39,7 @@ img:hover {
 	border: solid grey 3px;
 	min-height: 400px;
 	min-width: 430px;
+	max-width: 430px;
 	background: #fff;
 	box-shadow: 0 2px 4px 0 #00000033,
 	0 25px 50px 0 rgba(0, 0, 0, 0.1);
@@ -161,10 +162,11 @@ li {
 	justify-content: space-between;
 	/* This property counts all the children and spaces them accordingly */
 	align-items: center;
+	transition: display ease-in 1s;
 }
 
 .sub-todo-list {
-	padding-left: 20px;
+	padding-left: 30px;
 	color: grey;
 }
 

@@ -1,4 +1,4 @@
-let utils = {
+const utils = {
     setupConsole: () => {
         const commands = {
             ins: controller.insertTodo.bind( null, model.$root ),

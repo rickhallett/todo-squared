@@ -1,4 +1,4 @@
-let controller = {
+const controller = {
     //BUG: editTodo will change all todos that have indentical text within console commands
     //proposed solution: find todo by id and delete by id
     //proposed solution: count todos that have identical text and if > 1 then prompt user to define parent todo text name
