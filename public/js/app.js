@@ -25,6 +25,7 @@ class Todo {
     this.dateCreated = new Date();
     this.subTodo = null;
     this.isExpanded = false;
+    this.isActive = false;
   }
 
   edit( text ) {
@@ -34,6 +35,10 @@ class Todo {
 
   toggleExpand() {
     this.isExpanded = !this.isExpanded;
+  }
+
+  toggleActive() {
+    this.isActive = !this.isActive;
   }
 }
 
@@ -91,7 +96,7 @@ let utils = {
 let model = new TodoList();
 
 let controller = {
-  //BUG: editTodo will change all todos that have indentical text
+  //BUG: editTodo will change all todos that have indentical text within console commands
   //proposed solution: find todo by id and delete by id
   //proposed solution: count todos that have identical text and if > 1 then prompt user to define parent todo text name
   //:bug: change child parents on edit
@@ -119,26 +124,37 @@ let controller = {
     view.render();
     view.consoleRender( model.$root );
   },
-  //TO ADD: find multiple matching todo texts if exist
-  //USE CASE: controller.findTodo(model.$root, 'find this todo');
-  findTodo: ( todoList, text ) => {
+  findActiveTodo: ( todoList ) => {
     let foundTodo;
     ( function findIn( array ) {
       array.forEach( function ( currentTodo ) {
         //base case
-        if ( currentTodo.text === text ) {
+        if ( currentTodo.isActive === true ) {
           foundTodo = currentTodo;
-          return void 0;
         }
         //recursive case
         if ( currentTodo.subTodo !== null ) {
           return findIn( currentTodo.subTodo );
         }
       } );
-      return foundTodo;
+    } )( todoList );
+    if(foundTodo) return foundTodo;
+    return void 0;
+  },
+  deactivateAll: ( todoList, id ) => {
+    ( function deactivate( array ) {
+      array.forEach( function ( currentTodo ) {
+        //base case
+        currentTodo.isActive = false;
+        //recursive case
+        if ( currentTodo.subTodo !== null ) {
+          return deactivate( currentTodo.subTodo );
+        }
+      } );
     } )( todoList );
   },
   //USE CASE: controller.findTodo(model.$root, 'find this todo');
+  //BUG: currently child todos are added by parent; this is vulnerable to identical parent names: switch to unique ID
   insertTodo: ( todoList, text, parent ) => {
     let originalModel = cloneDeep( model.$root );
     if ( parent ) {
@@ -398,7 +414,9 @@ let view = {
       let newTodo = input.value;
       if ( newTodo.length > 0 ) {
         newTodo.trim();
-        controller.insertTodo( model.$root, newTodo );
+        let parent = controller.findActiveTodo( model.$root );
+        parent.isExpanded = true;
+        controller.insertTodo( model.$root, newTodo, parent.text );
       } else {
         removeFocusAndReset();
       }
@@ -488,6 +506,7 @@ let view = {
     let todoLabel = document.createElement( 'label' );
     //HACK: unknown cause of label text closer to checkbox when created through model function
     todoLabel.textContent = ' ' + todo.text;
+    todoLabel.className = todo.isActive ? 'active' : 'inactive';
 
     //create editInput, set default to hide and also insert to todo-text div
     let editInput = document.createElement( 'input' );
@@ -505,6 +524,12 @@ let view = {
       todo.style.display = 'inline';
     }
 
+    todoLabel.addEventListener( 'click', function () {
+      if ( todo.isActive === false ) controller.deactivateAll( model.$root, todo.id );
+      todo.toggleActive();
+      view.render();
+    } );
+
     todoLabel.addEventListener( 'dblclick', function ( event ) {
       let textToEdit = todoLabel.innerText;
       showInput( event );
@@ -519,7 +544,7 @@ let view = {
       if ( event.which === ENTER_KEY ) {
         let newText = editInput.value;
         newText.trim();
-        controller.editTodo( model.$root, todo.id, todo.newText );
+        controller.editTodo( model.$root, todo.id, newText );
       }
     } );
 
@@ -529,7 +554,7 @@ let view = {
       } else {
         let newText = editInput.value;
         newText.trim();
-        controller.editTodo( model.$root, todo.id, todo.newText );
+        controller.editTodo( model.$root, todo.id, newText );
       }
     } );
 

@@ -87,6 +87,15 @@ img:hover {
 
 .expander {
 	margin-left: 5px;
+	color:  rgb(190, 190, 190);
+}
+
+.expander:hover {
+	color: rgb(112, 112, 112);
+}
+
+.active {
+	color: black;
 }
 
 .edit-input {

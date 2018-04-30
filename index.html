@@ -9,38 +9,6 @@
   <body>
       <img src="./public/img/gcat.png"></img>
       <div id="app"></div>
-      <div id="instructions">
-        <p style="margin-bottom: 20px;">For Console Application:</p>
-        <p>open console</p>
-        <p><strong>Add todo: </strong><code>app.ins([todo text: String], [todo parent: String]);</code></p>
-        <p>
-          <code class="example">app.ins('add this todo', 'master watchandcode');</code>
-        </p>
-        <p>
-          <em>(Without a todo parent string, the app will add the todo to the root level.)</em>
-        </p>
-        <p><strong>Delete todo:</strong>
-        <code>app.del([todo text: String]);</code></p>
-        <p>
-          <code class="example">app.del('delete this todo');</code>
-        </p>
-        <p>
-          <strong>Edit todo:</strong>
-          <code>app.edit([original todo text: String], [changed todo text: String]);</code>
-        </p>
-        <p>
-          <code class="example">app.edit('edit this todo', 'this has been edited');</code>
-        </p>
-        <p>
-          <strong>Toggle todo:</strong>
-          <code>app.tog([todo text: String]);</code>
-        </p>
-        <p>
-          <strong>Toggle All:</strong>
-          <code>app.togall();</code>
-        </p>
-      </div>
-      
   </body>
 
   <script src="./public/js/underscore.js"></script>
