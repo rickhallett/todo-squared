@@ -25,13 +25,17 @@ const APP_STATE = {
 
 function lockdown() {
   APP_STATE.lockdown = true;
+  // document.body.style.backgroundColor = 'darkred';
+  // document.body.style.opacity = 0.55;
+  view.toggleWarningCat(true);
   APP_STATE.userData = cloneDeep( model.$root );;
-  model.$root = cloneDeep(HTAQ_JSON);
+  model.$root = cloneDeep( HTAQ_JSON );
   view.render( model.$root );
 }
 
 function removeLockdown() {
   APP_STATE.lockdown = false;
+  view.toggleWarningCat(false);
   model.$root = APP_STATE.userData;
   HTAQ_JSON = JSON.parse( HTAQ );
   view.render( model.$root );

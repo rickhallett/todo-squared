@@ -83,5 +83,10 @@ const view = {
         components.placeInside( todoContainer, app );
         components.placeInside( footer, app);
         utils.store( 'todo-squared', model.$root );
+    },
+    toggleWarningCat: (image) => {
+        let warningCat = document.getElementsByTagName( 'img' )[ 0 ];
+        warningCat.src = image ? './public/img/fire.png' : './public/img/gcat.png';
+        warningCat.classList.toggle( 'locked' );
     }
 }
