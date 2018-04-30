@@ -237,7 +237,6 @@ let controller = {
     view.consoleRender( model.$root );
   },
   toggleAll: todoList => {
-    //BUG: function only toggles all on, doesn't recognise when all 
     //use 'every' to determine if all todos are toggled
     let areAllToggled = ( function findIncompleteTodo( array ) {
       return array.every( function ( currentTodo ) {
@@ -389,11 +388,57 @@ let view = {
     let input = document.createElement( 'input' );
     input.id = 'enter';
     input.placeholder = 'What would you like todo?';
+
+    function getValueAndInsert() {
+      let newTodo = input.value;
+      if ( newTodo.length > 0 ) {
+        newTodo.trim();
+        controller.insertTodo( model.$root, newTodo );
+      } else {
+        removeFocusAndReset();
+      }
+    }
+
+    function removeFocusAndReset() {
+      input.value = '';
+      input.placeholder = 'What would you like todo?';
+      input.blur();
+    }
+
+    input.addEventListener( 'keydown', function ( event ) {
+      if ( event.which === ENTER_KEY ) {
+        getValueAndInsert();
+      }
+
+      if ( event.which === ESCAPE_KEY ) {
+        removeFocusAndReset();
+      }
+
+    } );
+
+    input.addEventListener( 'blur', function () {
+      if ( addTodoButton.preventBlur === false ) removeFocusAndReset();
+    } );
+
     header.appendChild( input );
 
     let addTodoButton = document.createElement( 'button' );
     addTodoButton.id = 'add-todo';
     addTodoButton.textContent = 'Add Todo';
+    addTodoButton.preventBlur = false;
+
+    addTodoButton.addEventListener( 'mouseover', function () {
+      addTodoButton.preventBlur = true;
+    } );
+
+    addTodoButton.addEventListener( 'mouseleave', function () {
+      addTodoButton.preventBlur = false;
+    } );
+
+    addTodoButton.addEventListener( 'click', function () {
+      getValueAndInsert();
+    } );
+
     header.appendChild( addTodoButton );
 
     todoContainer.appendChild( header );
