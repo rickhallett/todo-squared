@@ -43,7 +43,9 @@ const utils = {
     },
     //feed example data to model
     seedData: () => {
-        model.$root = STOCK_JSON;
-        view.render( model.$root );
+        if(!APP_STATE.lockdown) {
+            model.$root = cloneDeep(STOCK_JSON);
+            view.render( model.$root );
+        }
     }
 }

@@ -20,13 +20,13 @@ let STOCK_JSON = JSON.parse( stock );
 
 const APP_STATE = {
   lockdown: false,
-  userData: ''
+  userData: {}
 }
 
 function lockdown() {
   APP_STATE.lockdown = true;
   APP_STATE.userData = cloneDeep( model.$root );;
-  model.$root = HTAQ_JSON;
+  model.$root = cloneDeep(HTAQ_JSON);
   view.render( model.$root );
 }
 
