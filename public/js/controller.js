@@ -23,7 +23,7 @@ const controller = {
             } );
         } )( todoList )
 
-        if ( utils.exitIfEqual( originalModel, model.$root, 'edit' ) ) return void 0;
+        if ( utils.exitIfEqual( originalModel, model.$root, 'edit' ) ) return false;
 
         view.render();
         view.consoleRender( model.$root );
@@ -33,17 +33,13 @@ const controller = {
         ( function findIn( array ) {
             array.forEach( function ( currentTodo ) {
                 //base case
-                if ( currentTodo.isActive === true ) {
-                    foundTodo = currentTodo;
-                }
+                if ( currentTodo.isActive === true ) foundTodo = currentTodo;
                 //recursive case
-                if ( currentTodo.subTodo !== null ) {
-                    return findIn( currentTodo.subTodo );
-                }
+                if ( currentTodo.subTodo !== null ) return findIn( currentTodo.subTodo );
             } );
         } )( todoList );
         if ( foundTodo ) return foundTodo;
-        return void 0;
+        return;
     },
     deactivateAll: ( todoList, id ) => {
         ( function deactivate( array ) {
@@ -51,9 +47,7 @@ const controller = {
                 //base case
                 currentTodo.isActive = false;
                 //recursive case
-                if ( currentTodo.subTodo !== null ) {
-                    return deactivate( currentTodo.subTodo );
-                }
+                if ( currentTodo.subTodo !== null ) return deactivate( currentTodo.subTodo );
             } );
         } )( todoList );
     },
@@ -64,7 +58,6 @@ const controller = {
             array.forEach( ( todo ) => {
                 //base case
                 if ( todo.completed === true ) completedTodos.push( todo.id );
-
                 //recursive case
                 if ( todo.subTodo !== null ) return getIDs( todo.subTodo );;
             } );
@@ -72,6 +65,19 @@ const controller = {
 
         ///forEach checked todo, deleteTodo by ID
         completedTodos.forEach( id => controller.deleteTodo( todoList, id ) );
+    },
+    checkCompleted: (todoList) => {
+        let count = 0;
+        ( function countIn( array ) {
+            array.forEach( function ( currentTodo ) {
+                //base case
+                if(currentTodo.completed === true) count++;;
+                //recursive case
+                if ( currentTodo.subTodo !== null ) return countIn( currentTodo.subTodo );
+            } );
+        } )( todoList );
+        if ( count === controller.totalTodos(model.$root) ) return true;
+        return false;
     },
     //USE CASE: controller.findTodo(model.$root, 'find this todo');
     //BUG: currently child todos are added by parent; this is vulnerable to identical parent names: switch to unique ID
@@ -89,7 +95,7 @@ const controller = {
                         currentTodo.subTodo.push( new Todo( text, parent ) );
                         console.clear();
                         console.log( `"${ text }" was inserted at "${ parent }"` );
-                        return void 0;
+                        return;
                     }
                     //recursive case
                     if ( currentTodo.subTodo !== null ) {
@@ -105,7 +111,7 @@ const controller = {
             console.log( `"${ text }" was inserted at $root` );
         }
 
-        if ( utils.exitIfEqual( originalModel, model.$root, 'insert' ) ) return void 0;
+        if ( utils.exitIfEqual( originalModel, model.$root, 'insert' ) ) return false;
 
         view.render();
         view.consoleRender( model.$root );
@@ -129,7 +135,6 @@ const controller = {
                         console.clear();
                         console.log( `"${ id }" was deleted from "${ lastAncestor.text }"` );
                     }
-                    return void 0;
                 }
                 //recursive case
                 if ( currentTodo.subTodo !== null ) {
@@ -142,7 +147,7 @@ const controller = {
             ancestors.pop();
         } )( todoList );
 
-        if ( utils.exitIfEqual( originalModel, model.$root, 'delete' ) ) return void 0;
+        if ( utils.exitIfEqual( originalModel, model.$root, 'delete' ) ) return false;
 
         view.render();
         view.consoleRender( model.$root );
@@ -165,7 +170,6 @@ const controller = {
                             } );
                         } )( currentTodo.subTodo );
                     }
-                    return void 0;
                 }
                 //single nested recursive case
                 if ( currentTodo.subTodo !== null ) {
@@ -213,11 +217,8 @@ const controller = {
             array.forEach( function ( currentTodo ) {
                 counter++;
                 //recursive case
-                if ( currentTodo.subTodo !== null ) {
-                    return countIn( currentTodo.subTodo );
-                }
-                //base case
-                return void 0;
+                if ( currentTodo.subTodo !== null ) return countIn( currentTodo.subTodo );
+                //base case is implicit
             } );
             return counter;
         } )( todoList );

@@ -39,6 +39,13 @@ const utils = {
             console.log( `%c${ functionType } was unsuccessful`, "color: red" );
             return true;
         }
-        return void 0;
+        return false;
+    },
+    //feed example data to model
+    seedData: () => {
+        if(!APP_STATE.lockdown) {
+            model.$root = cloneDeep(STOCK_JSON);
+            view.render( model.$root );
+        }
     }
 }
