@@ -38,7 +38,7 @@ const view = {
         let todoContainer = components.constructContainer();
         //allocate memory for construction of HTML
         let tempDOM = components.constructTodoList();
-        //copy virtualDOM to hold position in recursion (for readability)
+        //copy to hold position in recursion (for readability)
         let currentContainer = tempDOM;
         let previousTodo;
         let ancestorPath = [];
@@ -71,14 +71,17 @@ const view = {
                 if ( index === fromArray.length - 1 ) {
                     currentContainer = currentContainer.parentNode;
                     if ( ancestorPath.length > 1 ) return ancestorPath.pop();
-                    return void 0;
+                    return void 0;;
                 }
 
             } );
         } )( model.$root );
 
+        let footer = components.constructFooter();
+
         components.placeInside( tempDOM, todoContainer );
         components.placeInside( todoContainer, app );
+        components.placeInside( footer, app);
         utils.store( 'todo-squared', model.$root );
     }
 }

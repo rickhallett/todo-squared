@@ -37,7 +37,7 @@ img:hover {
 #app {
 	margin: 10px auto;
 	border: solid grey 3px;
-	min-height: 400px;
+	min-height: 75px;
 	min-width: 430px;
 	max-width: 430px;
 	background: #fff;
@@ -53,6 +53,20 @@ img:hover {
 	margin-bottom: 15px;
 }
 
+#footer {
+	color: rgb(179, 175, 175);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0px 25px 10px 20px;
+	/* margin-bottom: 15px; */
+}
+
+#clear:hover {
+	color: rgb(160, 160, 160);
+	cursor: pointer;
+}
+
 
 .toggle-all {
 	transform: translate(-2px, 0px);
@@ -61,6 +75,7 @@ img:hover {
 
 .toggle-all:hover {
 	color: black;
+	cursor: pointer;
 }
 
 #enter {
@@ -88,6 +103,7 @@ img:hover {
 #add-todo:hover {
 	background: #3cb0fd;
 	text-decoration: none;
+	cursor: pointer;
 }
 
 .expander {
@@ -97,6 +113,7 @@ img:hover {
 
 .expander:hover {
 	color: rgb(112, 112, 112);
+	cursor: pointer;
 }
 
 .active {
@@ -124,7 +141,7 @@ img:hover {
 }
 
 .todoContainer {
-	padding: 20px;
+	padding: 20px 20px 5px 20px;
 }
 
 #todo-list {
@@ -144,6 +161,7 @@ img:hover {
 #toggle-all:hover {
 	color: black;
 	opacity: 0.675;
+	cursor: pointer;
 }
 
 ul {

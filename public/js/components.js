@@ -79,6 +79,24 @@ const components = {
         todoContainer.appendChild( header );
         return todoContainer;
     },
+    constructFooter: () => {
+        //create div to contain footer elements
+        let footer = document.createElement( 'div' );
+        footer.id = 'footer';
+
+        let count = document.createElement('label');
+        count.innerText = '16 items';
+
+        footer.appendChild(count);
+
+        let clearCompleted = document.createElement('label');
+        clearCompleted.id = 'clear'
+        clearCompleted.innerText = 'Clear completed';
+
+        footer.appendChild(clearCompleted);
+
+        return footer;
+    },
     constructTodoComponent: ( todo ) => {
         //create todo div to create consistent todo styling
         let todoLI = document.createElement( 'li' );
