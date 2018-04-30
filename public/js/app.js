@@ -237,6 +237,7 @@ let controller = {
     view.consoleRender( model.$root );
   },
   toggleAll: todoList => {
+    //BUG: function only toggles all on, doesn't recognise when all 
     //use 'every' to determine if all todos are toggled
     let areAllToggled = ( function findIncompleteTodo( array ) {
       return array.every( function ( currentTodo ) {
@@ -246,8 +247,8 @@ let controller = {
         //recursive case
         if ( currentTodo.subTodo !== null ) {
           findIncompleteTodo( currentTodo.subTodo );
-          return true;
         }
+        return true;
       } );
     } )( todoList );
 
@@ -366,9 +367,6 @@ let view = {
     view.placeInside( todoContainer, app );
     utils.store( 'todo-squared', model.$root );
   },
-  setupEventListeners: () => {
-
-  },
   constructContainer: () => {
     //create container div for app
     let todoContainer = document.createElement( 'div' );
@@ -378,8 +376,14 @@ let view = {
     let header = document.createElement( 'div' );
     header.id = 'header';
 
-    let toggleAllIcon = document.createElement( 'i' );
-    toggleAllIcon.className = 'fas fa-angle-down fa-2x toggle-all';
+    let toggleAllIcon = document.createElement( 'img' );
+    toggleAllIcon.src = './public/img/angle-down.svg';
+    toggleAllIcon.id = 'toggle-all';
+
+    toggleAllIcon.addEventListener( 'click', function () {
+      controller.toggleAll( model.$root );
+    } );
+
     header.appendChild( toggleAllIcon );
 
     let input = document.createElement( 'input' );
@@ -459,7 +463,7 @@ let view = {
       if ( event.which === ENTER_KEY ) {
         let newText = editInput.value;
         newText.trim();
-        controller.editTodo( model.$root, id, newText );
+        controller.editTodo( model.$root, todo.id, todo.newText );
       }
     } );
 
@@ -469,7 +473,7 @@ let view = {
       } else {
         let newText = editInput.value;
         newText.trim();
-        controller.editTodo( model.$root, id, newText );
+        controller.editTodo( model.$root, todo.id, todo.newText );
       }
     } );
 
@@ -485,7 +489,7 @@ let view = {
     destroyButton.textContent = 'x';
 
     destroyButton.addEventListener( 'click', function ( event ) {
-      controller.deleteTodo( model.$root, id );
+      controller.deleteTodo( model.$root, todo.id );
     } );
 
     todoLI.appendChild( destroyButton );

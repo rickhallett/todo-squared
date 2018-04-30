@@ -26,6 +26,10 @@ img {
 	opacity: 0.25;
 }
 
+img:hover {
+	opacity: 0.3;
+}
+
 #app {
 	margin: 10px auto;
 	border: solid grey 3px;
@@ -115,6 +119,17 @@ img {
 
 .toggle {
 	margin: 0;
+}
+
+#toggle-all {
+	max-height: 30px;
+	transform: translate(-3px);
+	opacity: 0.5;
+}
+
+#toggle-all:hover {
+	color: black;
+	opacity: 0.675;
 }
 
 ul {
