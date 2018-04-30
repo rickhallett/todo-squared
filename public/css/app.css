@@ -10,9 +10,8 @@ body {
 }
 
 .instructions {
-	margin: 25px auto;
+	margin: 10px auto;
 	max-width: 325px;
-
 	opacity: 0.5;
 	font-size: 0.6rem;
 }
