@@ -15,7 +15,7 @@ const utils = {
             return localStorage.setItem( namespace, JSON.stringify( data ) );
         } else {
             var store = localStorage.getItem( namespace );
-            return ( store && JSON.parse( store ) ) || [];
+            return ( store && JSON.parse( store ) ) || new TodoList;
         }
     },
     generateID: () => {

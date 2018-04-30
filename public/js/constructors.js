@@ -16,6 +16,8 @@ class Todo {
         this.isActive = false;
     }
 
+    //in old implentation, unable to keep reference to these methods once data has been retrieved from storage (as todo data will not be stored as a Todo constructed object: the link is severed)
+    /*
     edit( text ) {
         this.text = text;
         this.dateModified = new Date();
@@ -28,4 +30,5 @@ class Todo {
     toggleActive() {
         this.isActive = !this.isActive;
     }
+    */
 }

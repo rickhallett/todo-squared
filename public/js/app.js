@@ -10,7 +10,8 @@ const ESCAPE_KEY = 27;
 
 window.onload = function() {
   utils.setupConsole();
-  seedData();
+  // seedData();
+  model.$root = utils.store('todo-squared');
   view.render( model.$root );
 }
 

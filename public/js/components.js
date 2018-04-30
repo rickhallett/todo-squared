@@ -85,13 +85,21 @@ const components = {
         footer.id = 'footer';
 
         let count = document.createElement('label');
-        count.innerText = '16 items';
+
+        let totalTodos = controller.totalTodos( model.$root );
+        let itemString = utils.pluralize( totalTodos, 'item' );
+
+        count.innerText = `${totalTodos} ${itemString}`;
 
         footer.appendChild(count);
 
         let clearCompleted = document.createElement('label');
         clearCompleted.id = 'clear'
         clearCompleted.innerText = 'Clear completed';
+
+        clearCompleted.addEventListener('click', function() {
+            controller.clearCompleted();
+        });
 
         footer.appendChild(clearCompleted);
 
@@ -127,7 +135,7 @@ const components = {
         expander.className = 'expander';
 
         expander.addEventListener( 'click', function () {
-            todo.toggleExpand();
+            todo.isExpanded = !todo.isExpanded;
             view.render();
         } );
 
@@ -142,7 +150,6 @@ const components = {
         //create editInput, set default to hide and also insert to todo-text div
         let editInput = document.createElement( 'input' );
         editInput.className = 'edit-input';
-        // editInput.maxLength = 35;
         editInput.style.display = 'none'
 
         function showInput( event ) {
@@ -164,7 +171,7 @@ const components = {
             timer = setTimeout( function () {
                 if ( !prevent ) {
                     if ( todo.isActive === false ) controller.deactivateAll( model.$root, todo.id );
-                    todo.toggleActive();
+                    todo.isActive = !todo.isActive;
                     view.render();
                 }
             }, delay );

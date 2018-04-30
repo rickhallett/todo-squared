@@ -1,5 +1,8 @@
 //feed example data to browser console
 seedData = () => {
+  //delete existing data
+  model.$root = [];
+
   controller.insertTodo(
     model.$root,
     'master watchandcode'

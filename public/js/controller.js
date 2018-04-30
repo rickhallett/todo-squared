@@ -11,7 +11,8 @@ const controller = {
             array.forEach( function ( currentTodo ) {
                 //base case
                 if ( currentTodo.id === id ) {
-                    currentTodo.edit( newText );
+                    currentTodo.text = newText;
+                    currentTodo.dateModified = new Date();
                     console.clear();
                     console.log( `"${ id }" was edited to "${ newText }"` );
                 }
@@ -55,6 +56,11 @@ const controller = {
                 }
             } );
         } )( todoList );
+    },
+    clearCompleted: () => {
+        //get IDs of checked todos
+
+        ///forEach checked todo, deleteTodo by ID
     },
     //USE CASE: controller.findTodo(model.$root, 'find this todo');
     //BUG: currently child todos are added by parent; this is vulnerable to identical parent names: switch to unique ID
