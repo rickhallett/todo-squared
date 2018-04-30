@@ -524,13 +524,25 @@ let view = {
       todo.style.display = 'inline';
     }
 
+    let timer = 0;
+    let delay = 200;
+    let prevent = false;
+
     todoLabel.addEventListener( 'click', function () {
-      if ( todo.isActive === false ) controller.deactivateAll( model.$root, todo.id );
-      todo.toggleActive();
-      view.render();
+      //very slight delay on firing off the normal click action, which cancels when the double click event happens (prevents conflict)
+      timer = setTimeout( function () {
+        if ( !prevent ) {
+          if ( todo.isActive === false ) controller.deactivateAll( model.$root, todo.id );
+          todo.toggleActive();
+          view.render();
+        }
+      }, delay );
     } );
 
     todoLabel.addEventListener( 'dblclick', function ( event ) {
+      clearTimeout(timer);
+      prevent = true;
+
       let textToEdit = todoLabel.innerText;
       showInput( event );
       editInput.value = textToEdit;
