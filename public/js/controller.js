@@ -57,10 +57,21 @@ const controller = {
             } );
         } )( todoList );
     },
-    clearCompleted: () => {
+    clearCompleted: ( todoList ) => {
+        let completedTodos = [];
         //get IDs of checked todos
+        ( function getIDs( array ) {
+            array.forEach( ( todo ) => {
+                //base case
+                if ( todo.completed === true ) completedTodos.push( todo.id );
+
+                //recursive case
+                if ( todo.subTodo !== null ) return getIDs( todo.subTodo );;
+            } );
+        } )( todoList );
 
         ///forEach checked todo, deleteTodo by ID
+        completedTodos.forEach( id => controller.deleteTodo( todoList, id ) );
     },
     //USE CASE: controller.findTodo(model.$root, 'find this todo');
     //BUG: currently child todos are added by parent; this is vulnerable to identical parent names: switch to unique ID

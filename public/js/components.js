@@ -98,7 +98,7 @@ const components = {
         clearCompleted.innerText = 'Clear completed';
 
         clearCompleted.addEventListener('click', function() {
-            controller.clearCompleted();
+            controller.clearCompleted( model.$root );
         });
 
         footer.appendChild(clearCompleted);
@@ -145,6 +145,7 @@ const components = {
         let todoLabel = document.createElement( 'label' );
         //HACK: unknown cause of label text closer to checkbox when created through model function
         todoLabel.textContent = ' ' + todo.text;
+        if(todo.completed) todoLabel.style.textDecoration = 'line-through';
         todoLabel.className = todo.isActive ? 'active' : 'inactive';
 
         //create editInput, set default to hide and also insert to todo-text div
