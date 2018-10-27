@@ -16,7 +16,7 @@
 
     <div id="app">
         <div class="todoContainer">
-            <header>
+            <header id="header">
                 <img src="./public/img/angle-down.svg" id="toggle-all">
                 <!-- v-model: Create a two-way binding on a form input element or a component. -->
                 <input id="enter" autofocus autocomplete="off" placeholder="What would you like todo?" v-model="newTodo"
@@ -34,34 +34,33 @@
                     <button class="destroy">x</button>
                 </li>
                 <ul class="sub-todo-list">
-                    <li class="todo" data-name="consider reviewing some videos" data-id="A19-bkj-om">
+                    <li class="todo">
                         <div class="todo-text"><input type="checkbox" class="toggle"><label class="expander"></label><label
                                 class="inactive">
                                 consider reviewing some videos</label><input class="edit-input" style="display: none;"></div><button
                             class="destroy">x</button>
                     </li>
-                    <li class="todo" data-name="contribute to gordons eslint plugin" data-id="T6o-ZCr-az">
+                    <li class="todo">
                         <div class="todo-text"><input type="checkbox" class="toggle"><label class="expander"></label><label
                                 class="inactive">
                                 contribute to gordons eslint plugin</label><input class="edit-input" style="display: none;"></div><button
                             class="destroy">x</button>
                     </li>
-                    <li class="todo" data-name="digestion techniques" data-id="cZZ-T64-Sy">
+                    <li class="todo">
                         <div class="todo-text"><input type="checkbox" class="toggle"><label class="expander">-</label><label
                                 class="inactive">
                                 digestion techniques</label><input class="edit-input" style="display: none;"></div><button
                             class="destroy">x</button>
                     </li>
                     <ul class="sub-todo-list">
-                        <li class="todo" data-name="get unstuck" data-id="8lC-0VO-Zw">
+                        <li class="todo">
                             <div class="todo-text"><input type="checkbox" class="toggle"><label class="expander">-</label><label
                                     class="inactive">
                                     get unstuck</label><input class="edit-input" style="display: none;"></div><button
                                 class="destroy">x</button>
                         </li>
                         <ul class="sub-todo-list">
-                            <li class="todo" data-name="If you've put in an honest effort to figure something out but are still stuck, you must ask for help.You will not magically get unstuck.The answer will probably not come to you in your dreams."
-                                data-id="umj-5An-Zr">
+                            <li class="todo">
                                 <div class="todo-text"><input type="checkbox" class="toggle"><label class="expander"></label><label
                                         class="inactive"> If you've put in an honest effort to figure something out but
                                         are still
@@ -70,8 +69,7 @@
                                         come to you in your dreams.</label><input class="edit-input" style="display: none;"></div><button
                                     class="destroy">x</button>
                             </li>
-                            <li class="todo" data-name="Getting help here is so exceedingly easy that you have no excuse not to. The first place to go is the #questions channel in Slack. If it's Monday, you should go to office hours and get an answer directly from me over video chat.If it's in the morning, go to the morning accountability meeting and tell the group what you're having trouble with. Opportunities to get unstuck are all around you.You just have to put your hand out and take them."
-                                data-id="OlQ-QtO-16">
+                            <li class="todo">
                                 <div class="todo-text"><input type="checkbox" class="toggle"><label class="expander"></label><label
                                         class="inactive"> Getting help here is so exceedingly easy that you have no
                                         excuse not to. The
@@ -87,25 +85,25 @@
                                     class="destroy">x</button>
                             </li>
                         </ul>
-                        <li class="todo" data-name="add comments that describe each line in plain English" data-id="tIc-haB-7T">
+                        <li class="todo">
                             <div class="todo-text"><input type="checkbox" class="toggle"><label class="expander">+</label><label
                                     class="inactive">
                                     add comments that describe each line in plain English</label><input class="edit-input"
                                     style="display: none;"></div><button class="destroy">x</button>
                         </li>
-                        <li class="todo" data-name="leave it on your desk until it bores you" data-id="Vhv-E0G-Bz">
+                        <li class="todo">
                             <div class="todo-text"><input type="checkbox" class="toggle"><label class="expander">+</label><label
                                     class="inactive">
                                     leave it on your desk until it bores you</label><input class="edit-input" style="display: none;"></div><button
                                 class="destroy">x</button>
                         </li>
-                        <li class="todo" data-name="fix every combination of 1 missing feature" data-id="xm0-wN5-Jn">
+                        <li class="todo">
                             <div class="todo-text"><input type="checkbox" class="toggle"><label class="expander">+</label><label
                                     class="inactive">
                                     fix every combination of 1 missing feature</label><input class="edit-input" style="display: none;"></div><button
                                 class="destroy">x</button>
                         </li>
-                        <li class="todo" data-name="remove jQuery" data-id="3Mb-YeH-qt">
+                        <li class="todo">
                             <div class="todo-text"><input type="checkbox" class="toggle"><label class="expander">+</label><label
                                     class="inactive">
                                     remove jQuery</label><input class="edit-input" style="display: none;"></div><button
